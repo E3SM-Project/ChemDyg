@@ -1,0 +1,198 @@
+#!/bin/bash
+{% include 'slurm_header.sh' %}
+{{ environment_commands }}
+
+# To load custom E3SM Diags environment, comment out line above using {# ... #}
+# and uncomment lines below
+
+#module load anaconda3/2019.03
+#source /share/apps/anaconda3/2019.03/etc/profile.d/conda.sh
+#conda activate e3sm_diags_env_dev
+
+# Turn on debug output if needed
+debug={{ debug }}
+if [[ "${debug,,}" == "true" ]]; then
+  set -x
+fi
+
+# Make sure UVCDAT doesn't prompt us about anonymous logging
+export UVCDAT_ANONYMOUS_LOG=False
+
+# Script dir
+cd {{ scriptDir }}
+
+# Get jobid
+id=${SLURM_JOBID}
+
+# Update status file
+STARTTIME=$(date +%s)
+echo "RUNNING ${id}" > {{ prefix }}.status
+
+# Basic definitions
+case="{{ case }}"
+short="{{ short_name }}"
+www="{{ www }}"
+y1={{ year1 }}
+y2={{ year2 }}
+Y1="{{ '%04d' % (year1) }}"
+Y2="{{ '%04d' % (year2) }}"
+run_type="{{ run_type }}"
+tag="{{ tag }}"
+
+results_dir=${tag}_${Y1}-${Y2}
+
+# Create temporary workdir
+workdir=`mktemp -d tmp.${id}.XXXX`
+cd ${workdir}
+
+# Create local links to input climo files
+tsDir={{ output }}/post/atm/{{ grid }}/clim/{{ '%dyr' % (ypf) }}
+mkdir -p climo
+#cd climo
+ln -s ${tsDir}/*.nc ./climo
+#cd ..
+# Create symbolic links to input files
+#input={{ input }}/{{ input_subdir }}
+#for (( year=${y1}; year<=${y2}; year++ ))
+#do
+#  YYYY=`printf "%04d" ${year}`
+#  for file in ${input}/${case}.{{ input_files }}.${YYYY}-*.nc
+#  do
+#    ln -s ${file} .
+#  done
+#  for file in ${input}/${case}.{{ input_files2 }}.${YYYY}-*.nc
+#  do
+#    ln -s ${file} .
+#  done
+#done
+
+{%- if frequency != 'monthly' %}
+# For non-monthly input files, need to add the last file of the previous year
+year={{ year1 - 1 }}
+YYYY=`printf "%04d" ${year}`
+mapfile -t files < <( ls ${input}/{{ case }}.{{ input_files }}.${YYYY}-*.nc 2> /dev/null )
+{% raw -%}
+if [ ${#files[@]} -ne 0 ]
+then
+  ln -s ${files[-1]} .
+fi
+{%- endraw %}
+# as well as first file of next year to ensure that first and last years are complete
+year={{ year2 + 1 }}
+YYYY=`printf "%04d" ${year}`
+mapfile -t files < <( ls ${input}/{{ case }}.{{ input_files }}.${YYYY}-*.nc 2> /dev/null )
+{% raw -%}
+if [ ${#files[@]} -ne 0 ]
+then
+  ln -s ${files[0]} .
+fi
+{%- endraw %}
+{%- endif %}
+
+#cd ..
+
+# Run E3SM chem Diags
+echo
+echo ===== RUN E3SM CHEM DIAGS  =====
+echo
+
+# Prepare configuration file
+cat > e3sm_chem_index.py << EOF
+#!/usr/bin/env python
+# coding: utf-8
+
+from netCDF4 import Dataset
+import matplotlib.pyplot as plt
+import numpy as np
+import xarray as xr
+from calendar import monthrange
+import pandas as pd
+
+pathout = './'
+
+indexfile = open(pathout+'index.html',"w")
+index = '<h> E3SM chem diagnostics package v1.1 (September 2022) </h>'
+index = index + '<pre> Test: ${short} </pre>'
+index = index + '<pre> Reference: Observations and Reanalysis </pre>'
+index = index + '<pre>   </pre>'
+index = index + '<h> Pressure-Latitude plots </h>'
+index = index + '<pre> <a href="O3_pres_lat_plot.png">O3</a>  <a href="O3_pres_lat_plot_mb.png">O3 (Trop)</a>  <a href="Q_pres_lat_plot.png">Q</a>  <a href="T_pres_lat_plot.png">T</a> </pre>'
+index = index + '<h> Latitude-Longitude plots </h>'
+index = index + '<pre> <a href="TMQ_lat_lon_plot.png">TMQ</a> </pre>'
+index = index + '<h> NOx aircraft and lightning emission plots </h>'
+index = index + '<pre> <a href="nox_emis_plot.png">NOx emission</a> </pre>'
+index = index + '<h> TCO comparison with CMIP6 </h>'
+index = index + '<pre> <a href="CMIP_TCO_comparison.png">plot</a> </pre>'  
+index = index + '<h> Surface Ozone diurnal cycle comparison with CMIP6 </h>'
+index = index + '<pre> <a href="surfO3_hour_cycle_DJF.png">DJF</a>   <a href="surfO3_hour_cycle_JJA.png">JJA</a> </pre>'
+index = index + '<h> Surface Ozone annual cycle comparison with CMIP6 </h>'
+index = index + '<pre> <a href="MDA8_month_cycle.png">plot</a> </pre>'
+index = index + '<h> Surface CO comparison with NOAA observations </h>'
+index = index + '<pre> <a href="NOAA_CO_BRW.png"> BRW </a>  <a href="NOAA_CO_CGO.png"> CGO </a>  <a href="NOAA_CO_ICE.png"> ICE </a> <a href="NOAA_CO_KUM.png"> KUM </a>  <a href="NOAA_CO_MHD.png"> MHD </a>  <a href="NOAA_CO_MID.png"> MID </a>  <a href="NOAA_CO_PSA.png"> PSA </a>  <a href="NOAA_CO_RPB.png"> RPB </a>  <a href="NOAA_CO_SMO.png"> SMO </a>  <a href="NOAA_CO_SYO.png"> SYO </a>  <a href="NOAA_CO_WIS.png"> WIS </a>  <a href="NOAA_CO_ZEP.png"> ZEP </a>  </pre>'
+index = index + '<h> Ozone hole </h>'
+index = index + '<pre> <a href="to3areas_O3hole.png">areas</a>  <a href="to3mins_O3hole.png">mins</a> </pre>'
+index = index + '<h> Ozone hole with equivalent latitude </h>'
+index = index + '<pre> <a href="TOZ_PDF_timeseries.png">time_series</a>  <a href="TOZ_PDF_climo.png">climate</a> </pre>'
+index = index + '<h> Ozone STE_flux </h>'
+index = index + '<pre> <a href="O3_STE_flux.png">time series</a> <a href="O3_STE_flux_monthly.png">monthly</a> </pre>'
+index = index + '<h> Temperature with equivalent latitude </h>'
+index = index + '<pre> <a href="temp_PDF_climo.png">plot</a> </pre>'
+index = index + '<h> Chemistry tendency table </h>'
+index = index + '<pre> '+' <a href="chem_clim_ANN.html">ANN</a><a href="chem_clim_ANN.txt">(txt)</a>   <a href="chem_clim_DJF.html">DJF</a><a href="chem_clim_DJF.txt">(txt)</a>   <a href="chem_clim_MAM.html">MAM</a><a href="chem_clim_MAM.txt">(txt)</a>   <a href="chem_clim_JJA.html">JJA</a><a href="chem_clim_JJA.txt">(txt)</a>   <a href="chem_clim_SON.html">SON</a><a href="chem_clim_SON.txt">(txt)</a>   </pre>'
+index = index +'<pre> <a href="chem_budget.html">closure check and burden</a><a href="chem_budget.txt">(txt)</a> </pre>'
+index = index + '<h> Chemistry production/loss tendency table </h>'
+index = index + '<pre> '+' <a href="chem_prodloss_ANN.html"> ANN </a>   <a href="chem_prodloss_DJF.html"> DJF </a>   <a href="chem_prodloss_MAM.html"> MAM </a>   <a href="chem_prodloss_JJA.html"> JJA </a>   <a href="chem_prodloss_SON.html"> SON </a>   </pre>'
+index = index + '<h> Chem high-level summary table </h>'
+index = index + '<pre> <a href="chem_summary_table.html">table</a> </pre>'
+
+indexfile.write(index)
+indexfile.close()
+
+EOF
+
+# Run diagnostics
+command="python -u e3sm_chem_index.py"
+time ${command}
+if [ $? != 0 ]; then
+  cd ..
+  echo 'ERROR (1)' > {{ prefix }}.status
+  exit 1
+fi
+
+# Copy output to web server
+echo
+echo ===== COPY FILES TO WEB SERVER =====
+echo
+
+# Create top-level directory
+f=${www}/${case}/e3sm_chem_diags/plots/
+mkdir -p ${f}
+if [ $? != 0 ]; then
+  cd ..
+  echo 'ERROR (2)' > {{ prefix }}.status
+  exit 1
+fi
+
+# Copy files
+cp index.html ${www}/${case}/e3sm_chem_diags/plots/
+if [ $? != 0 ]; then
+  cd ..
+  echo 'ERROR (3)' > {{ prefix }}.status
+  exit 1
+fi
+cd ..
+if [[ "${debug,,}" != "true" ]]; then
+  rm -rf ${workdir}
+fi
+
+# Update status file and exit
+{% raw %}
+ENDTIME=$(date +%s)
+ELAPSEDTIME=$(($ENDTIME - $STARTTIME))
+{% endraw %}
+echo ==============================================
+echo "Elapsed time: $ELAPSEDTIME seconds"
+echo ==============================================
+echo 'OK' > {{ prefix }}.status
+exit 0
+
