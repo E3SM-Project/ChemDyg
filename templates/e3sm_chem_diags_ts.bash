@@ -50,6 +50,7 @@ cd ${workdir}
 #cd ..
 # Create symbolic links to input files
 input={{ input }}/{{ input_subdir }}
+eamfile={{ input_files }}
 for (( year=${y1}; year<=${y2}; year++ ))
 do
   YYYY=`printf "%04d" ${year}`
@@ -57,7 +58,7 @@ do
   do
     ln -s ${file} .
   done
-  for file in ${input}/${case}.eam.h1.${YYYY}-*.nc
+  for file in ${input}/${case}.eam.${eamfile}.${YYYY}-*.nc
   do
     ln -s ${file} .
   done
@@ -113,7 +114,7 @@ startyear = '${y1}'
 endyear = '${y2}'
 
 filename = short_name+'.eam.h0.*.nc'
-filenameh1 = short_name+'.eam.h1.*.nc'
+filenameh1 = short_name+'.eam.${eamfile}.*.nc'
 
 varname = ["O3","OH","HO2","H2O2","CH2O","CH3O2","CH3OOH","NO","NO2","NO3","N2O5",
            "HNO3","HO2NO2","PAN","CO","C2H6","C3H8","C2H4","ROHO2","CH3COCH3","C2H5O2",
