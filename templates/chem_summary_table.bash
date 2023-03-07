@@ -49,6 +49,7 @@ mkdir -p ts
 #cd ..
 # Create symbolic links to input files
 input={{ input }}/{{ input_subdir }}
+eamfile={{ input_files }}
 for (( year=${y1}; year<=${y2}; year++ ))
 do
   YYYY=`printf "%04d" ${year}`
@@ -56,7 +57,7 @@ do
   do
     ln -s ${file} ./ts
   done
-  for file in ${input}/${case}.eam.h1.${YYYY}-*.nc
+  for file in ${input}/${case}.eam.${eamfile}.${YYYY}-*.nc
   do
     ln -s ${file} ./ts
   done
@@ -112,7 +113,7 @@ startyear = '${y1}'
 endyear = '${y2}'
 
 filename = short_name+'.eam.h0.*.nc'
-filenameh1 = short_name+'.eam.h1.*.nc'
+filenameh1 = short_name+'.eam.${eamfile}.*.nc'
 
 varname = ["O3","CO","CH4","NO"]
 layer = ['']
