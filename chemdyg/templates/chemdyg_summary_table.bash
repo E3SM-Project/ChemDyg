@@ -57,7 +57,6 @@ do
   do
     ln -s ${file} ./ts
   done
-
   for file in ${input}/${case}.${eamfile}.${YYYY}-*.nc
   do
     ln -s ${file} ./ts
