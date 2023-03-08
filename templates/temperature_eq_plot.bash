@@ -239,9 +239,9 @@ if [ $? != 0 ]; then
   exit 1
 fi
 cd ..
-#if [[ "${debug,,}" != "true" ]]; then
-#  rm -rf ${workdir}
-#fi
+if [[ "${debug,,}" != "true" ]]; then
+  rm -rf ${workdir}
+fi
 
 # Update status file and exit
 {% raw %}
