@@ -57,7 +57,7 @@ do
   do
     ln -s ${file} ./ts
   done
-  for file in ${input}/${case}.eam.${eamfile}.${YYYY}-*.nc
+  for file in ${input}/${case}.${eamfile}.${YYYY}-*.nc
   do
     ln -s ${file} ./ts
   done
@@ -113,7 +113,7 @@ startyear = '${y1}'
 endyear = '${y2}'
 
 filename = short_name+'.eam.h0.*.nc'
-filenameh1 = short_name+'.eam.${eamfile}.*.nc'
+filenameh1 = short_name+'.${eamfile}.*.nc'
 
 varname = ["O3","CO","CH4","NO"]
 layer = ['']
