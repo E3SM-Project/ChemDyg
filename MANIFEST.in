@@ -1,1 +1,1 @@
-include zppy_e3sm_chem_diags/templates/*.bash
+include chemdyg/templates/*.bash
