@@ -10,7 +10,7 @@ from zppy.utils import (
 )
 
 # -----------------------------------------------------------------------------
-def e3sm_chem_diags(path, config, scriptDir, existing_bundles, job_ids_file):
+def chemdyg(path, config, scriptDir, existing_bundles, job_ids_file):
 
     # Initialize jinja2 template engine
     path_extra = os.path.join(path,"templates")
@@ -19,8 +19,8 @@ def e3sm_chem_diags(path, config, scriptDir, existing_bundles, job_ids_file):
     )
     templateEnv = jinja2.Environment( loader=templateLoader )
 
-    # --- List of e3sm_chem_diags tasks ---
-    tasks = getTasks(config, 'e3sm_chem_diags')
+    # --- List of chemdyg tasks ---
+    tasks = getTasks(config, 'chemdyg')
     if (len(tasks) == 0):
         return existing_bundles
 
