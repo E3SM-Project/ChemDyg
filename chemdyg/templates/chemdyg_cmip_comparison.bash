@@ -50,7 +50,7 @@ tsDir={{ output }}/post/atm/{{ grid }}/ts/monthly/{{ '%dyr' % (ypf) }}
 mkdir -p ts
 #cd ts
 ln -s ${tsDir}/TCO*.nc ./ts
-ln -s ${cmipDir}/*TCO.nc ./ts
+ln -s ${cmipDir}/TCO_CMIP6/*TCO.nc ./ts
 #cd ..
 # Create symbolic links to input files
 #input={{ input }}/{{ input_subdir }}

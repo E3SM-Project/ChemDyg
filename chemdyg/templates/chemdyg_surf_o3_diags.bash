@@ -50,7 +50,7 @@ tsDir1={{ output }}/post/atm/{{ grid1 }}/ts/hourly/{{ '%dyr' % (ypf) }}
 tsDir2={{ output }}/post/atm/{{ grid2 }}/ts/hourly/{{ '%dyr' % (ypf) }}
 #tsDir={{ output }}/post/atm/{{ grid }}
 mkdir -p ts
-ln -s ${obsDir}/mda8.surfO3.*.nc ./ts
+ln -s ${obsDir}/surfO3/mda8.surfO3.*.nc ./ts
 #cd ts
 ln -s ${tsDir1}/O3_SRF_${Y1}*.nc ./ts/O3_SRF_{{ grid1 }}.nc
 ln -s ${tsDir2}/O3_SRF_${Y1}*.nc ./ts/O3_SRF_{{ grid2 }}.nc
