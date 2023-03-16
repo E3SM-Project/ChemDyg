@@ -38,7 +38,8 @@ Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
 tag="{{ tag }}"
-noaaDir="{{reference_data_path}}"
+# diagnostics_base_path is set by zppy using the mache package
+noaaDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
 results_dir=${tag}_${Y1}-${Y2}
 
 # Create temporary workdir
@@ -209,7 +210,7 @@ for n in range(len(Sta)):
 
     diff = CO_sel_1D - lin_e3sm_xa
     diff_noaa = CO_noaa - lin_noaa_xa
-    # plotting 
+    # plotting
     fig, (ax1,ax2) = plt.subplots(2, 1,figsize=(10, 5))
     ax1.plot(time_range_noaa,CO_sel_1D,'k')
     ax1.plot(time_range_noaa[mask],lin_e3sm_xa[mask],'k--')
