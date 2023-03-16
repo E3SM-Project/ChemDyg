@@ -52,7 +52,7 @@ tsDir={{ output }}/post/atm/{{ grid }}/ts/monthly/{{ '%dyr' % (ypf) }}
 mkdir -p ts
 mkdir -p figs
 mkdir -p data
-ln -s ${obsDir}/*_obs.nc ./ts
+ln -s ${obsDir}/O3_hole/*_obs.nc ./ts
 #cd ts
 #ln -s ${tsDir}/TCO*.nc ./ts
 #ln -s ${cmipDir}/*TCO.nc ./ts

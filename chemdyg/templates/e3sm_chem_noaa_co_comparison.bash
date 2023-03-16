@@ -51,8 +51,8 @@ mkdir -p ts
 mkdir -p ts/TANG
 #cd ts
 ln -s ${tsDir}/CO*.nc ./ts
-ln -s ${noaaDir}/stations_met_selected.txt ./ts
-ln -s ${noaaDir}/TANG/*.nc ./ts/TANG
+ln -s ${noaaDir}/CO_NOAA/stations_met_selected.txt ./ts
+ln -s ${noaaDir}/CO_NOAA/TANG/*.nc ./ts/TANG
 #cd ..
 # Create symbolic links to input files
 #input={{ input }}/{{ input_subdir }}
