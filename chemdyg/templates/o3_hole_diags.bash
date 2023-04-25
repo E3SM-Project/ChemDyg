@@ -39,7 +39,8 @@ Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
 tag="{{ tag }}"
-obsDir="{{reference_data_path}}"
+# diagnostics_base_path is set by zppy using the mache package
+obsDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
 results_dir=${tag}_${Y1}-${Y2}
 
 # Create temporary workdir
