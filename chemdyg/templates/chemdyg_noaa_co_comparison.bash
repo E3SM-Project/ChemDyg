@@ -38,7 +38,8 @@ Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
 tag="{{ tag }}"
-noaaDir="{{reference_data_path}}"
+# diagnostics_base_path is set by zppy using the mache package
+noaaDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
 results_dir=${tag}_${Y1}-${Y2}
 
 # Create temporary workdir
@@ -50,9 +51,9 @@ tsDir={{ output }}/post/atm/{{ grid }}/ts/monthly/{{ '%dyr' % (ypf) }}
 mkdir -p ts
 mkdir -p ts/TANG
 #cd ts
-ln -s ${tsDir}/CO*.nc ./ts
-ln -s ${noaaDir}/stations_met_selected.txt ./ts
-ln -s ${noaaDir}/TANG/*.nc ./ts/TANG
+ln -s ${tsDir}/CO_SRF*.nc ./ts
+ln -s ${noaaDir}/CO_NOAA/stations_met_selected.txt ./ts
+ln -s ${noaaDir}/CO_NOAA/TANG/*.nc ./ts/TANG
 #cd ..
 # Create symbolic links to input files
 #input={{ input }}/{{ input_subdir }}
@@ -120,7 +121,7 @@ short_name = '${short}'
 startyear = '${Y1}'
 endyear = '${Y2}'
 
-e3smdataname = 'CO_'+startyear+'01_'+endyear+'12.nc'
+e3smdataname = 'CO_SRF_'+startyear+'01_'+endyear+'12.nc'
 file_in = xr.open_dataset(path+e3smdataname)
 
 timeperiod = len(file_in['time'])
@@ -128,12 +129,9 @@ startdate = str(np.array(file_in['time'].dt.year[0]))+'-'+str(np.array(file_in['
 time_range_month = pd.date_range(startdate,  periods=timeperiod, freq='M')
 file_in['time'] = time_range_month
 
-pres = file_in['hyam']*file_in['P0']+file_in['hybm']*file_in['PS'] #(lev,time,lat,lon)
-CO = file_in['CO']*1.e9
+CO = file_in['CO_SRF']*1.e9
 lat = file_in['lat']
 lon = file_in['lon']
-lev = file_in['lev']
-PS = file_in['PS']
 
 #read filenames from NOAA
 fid= open(path+'stations_met_selected.txt','r')
@@ -159,15 +157,12 @@ for n in range(len(Sta)):
     file = xr.open_dataset(path+filename)
     timeperiod_noaa = len(file['time'])
     startdate_noaa = str(np.array(file['time'].dt.year[0]))+'-'+str(np.array(file['time'].dt.month[0]))+'-01'
-    #print(startdate_noaa)
     time_range_noaa = pd.date_range(startdate_noaa,  periods=timeperiod_noaa, freq='M')
     file['time'] = time_range_noaa
-    #print(time_range_noaa)
 
     CO_noaa = file['CO']
     lat_noaa = file['lat']
     lon_noaa = file['lon']
-    lev_noaa = file['elev']
     site_code = file['site_code']
 
     new_lon = lon_noaa
@@ -177,18 +172,7 @@ for n in range(len(Sta)):
     CO_sel_1D = np.zeros(len(time_range_noaa))
     for t in range(len(time_range_noaa)):
         if time_range_noaa[t] >= time_range_month[0]:
-            CO_sel_2D = CO.sel(time = time_range_noaa[t], lat=lat_noaa,lon=new_lon,method ='nearest')#(lev,lat,lon)
-            #print(CO_sel_2D)
-            PS_sel = PS.sel(time = time_range_noaa[t], lat=lat_noaa,lon=new_lon,method ='nearest')
-            pres_sel = pres.sel(time = time_range_noaa[t], lat=lat_noaa,lon=new_lon,method ='nearest')
-            z_e3sm = 16*np.log(PS_sel/pres_sel)*1000. #(lat,lon,lev)
-            #print(z_e3sm)
-            CO_sel_1D[t] = CO_sel_2D[71,0,0]
-            for l in range(1,len(lev)-1):
-                ll = 71-l
-                if z_e3sm[0,0,ll]>lev_noaa:
-                    CO_sel_1D[t] = CO_sel_2D[ll+1,0,0]
-                    break
+            CO_sel_1D[t] = CO.sel(time = time_range_noaa[t], lat=lat_noaa,lon=new_lon,method ='nearest')#(lev,lat,lon)
             if time_range_noaa[t]> time_range_month[-1]:
                 CO_sel_1D[t::] = 'nan'
                 break
@@ -209,7 +193,7 @@ for n in range(len(Sta)):
 
     diff = CO_sel_1D - lin_e3sm_xa
     diff_noaa = CO_noaa - lin_noaa_xa
-    # plotting 
+    # plotting
     fig, (ax1,ax2) = plt.subplots(2, 1,figsize=(10, 5))
     ax1.plot(time_range_noaa,CO_sel_1D,'k')
     ax1.plot(time_range_noaa[mask],lin_e3sm_xa[mask],'k--')
