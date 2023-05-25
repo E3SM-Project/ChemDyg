@@ -5,13 +5,13 @@ https://web.lcrc.anl.gov/public/e3sm/diagnostic_output/ac.lee1061/20220914.PAN.M
 
 ChemDyg is executed by zppy, which is a post-processing toolchain for E3SM written in Python (https://github.com/E3SM-Project/zppy).
 
-*How to run ChemDyg via zppy script on chrysalis (same as other zppy-supported machines)?
+*How to run ChemDyg via zppy script on chrysalis?
 ```
 source /lcrc/soft/climate/e3sm-unified/load_latest_e3sm_unified_chrysalis.sh
 wget https://raw.githubusercontent.com/E3SM-Project/ChemDyg/main/ChemDyg_example_script.cfg
 zppy -c ChemDyg_example_script.cfg
 ```
-See [documentation](https://e3sm-project.github.io/zppy) for more details.
+**Note that the users need to change the'e3sm_unified' path on different zppy-supported machines (https://e3sm-project.github.io/zppy/_build/html/main/getting_started.html#activate-e3sm-unified-environment). 
 
 ## License
 
