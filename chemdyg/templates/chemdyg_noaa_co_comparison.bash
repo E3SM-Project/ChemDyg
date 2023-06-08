@@ -187,6 +187,8 @@ for n in range(len(Sta)):
 
     nmonth = np.arange(0,len(CO_sel_1D),1)
     mask = ~np.isnan(CO_sel_1D)
+    if (len(nmonth[mask]) == 0):
+        continue
     slope_e3sm, intercept, r_value, p_value, std_err = linregress(nmonth[mask], CO_sel_1D[mask])
     lin_e3sm = nmonth*slope_e3sm+intercept
     lin_e3sm_xa = xr.DataArray(lin_e3sm, coords=[time_range_noaa], dims=["time"])
