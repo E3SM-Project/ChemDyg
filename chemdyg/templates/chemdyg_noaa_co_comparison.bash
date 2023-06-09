@@ -200,38 +200,50 @@ for n in range(len(Sta)):
     slope_noaa, intercept, r_value, p_value, std_err = linregress(nmonth_noaa[mask_noaa], CO_noaa[mask_noaa])
     lin_noaa = nmonth_noaa*slope_noaa+intercept
     lin_noaa_xa = xr.DataArray(lin_noaa, coords=[time_range_noaa], dims=["time"])
+    diff_noaa = CO_noaa - lin_noaa_xa
 
     nmonth = np.arange(0,len(CO_sel_1D),1)
     mask = ~np.isnan(CO_sel_1D)
-    if (len(nmonth[mask]) == 0):
-        continue
-    slope_e3sm, intercept, r_value, p_value, std_err = linregress(nmonth[mask], CO_sel_1D[mask])
-    lin_e3sm = nmonth*slope_e3sm+intercept
-    lin_e3sm_xa = xr.DataArray(lin_e3sm, coords=[time_range_noaa], dims=["time"])
+    if (len(nmonth[mask]) != 0):
+        slope_e3sm, intercept, r_value, p_value, std_err = linregress(nmonth[mask], CO_sel_1D[mask])
+        lin_e3sm = nmonth*slope_e3sm+intercept
+        lin_e3sm_xa = xr.DataArray(lin_e3sm, coords=[time_range_noaa], dims=["time"])
+        diff = CO_sel_1D - lin_e3sm_xa
 
-    diff = CO_sel_1D - lin_e3sm_xa
-    diff_noaa = CO_noaa - lin_noaa_xa
-    # plotting 
-    fig, (ax1,ax2) = plt.subplots(2, 1,figsize=(10, 5))
-    ax1.plot(time_range_noaa,CO_sel_1D,'k')
-    ax1.plot(time_range_noaa[mask],lin_e3sm_xa[mask],'k--')
-    ax1.plot(time_range_noaa,CO_noaa,'r')
-    ax1.plot(time_range_noaa[mask_noaa],lin_noaa_xa[mask_noaa],'r--')
-    #ax1.set_ylim(0,200)
-    ax1.set_title('Surface CO at '+Sta[n]+' (Lat '+str(lat_noaa[0].values)+', Lon '+str(lon_noaa[0].values)+')')
-    line1 = 'E3SM mean:'+str(np.round(CO_sel_1D[mask].mean(),2))
-    line2 = 'E3SM trend:'+str(np.round(slope_e3sm*12,2))+' ppb/yr'
-    line3 = 'NOAA mean:'+str(np.round(CO_noaa[mask_noaa].mean().values,2))
-    line4 = 'NOAA trend:'+str(np.round(slope_noaa*12,2))+' ppb/yr'
-    ax1.legend([line1,line2, line3,line4])
-    #ax1.grid(True)
+        # plotting
+        fig, (ax1,ax2) = plt.subplots(2, 1,figsize=(10, 5))
+        ax1.plot(CO_noaa['time'],CO_sel_1D,'k')
+        ax1.plot(CO_noaa['time'][mask],lin_e3sm_xa[mask],'k--')
+        ax1.plot(CO_noaa['time'],CO_noaa,'r')
+        ax1.plot(CO_noaa['time'][mask_noaa],lin_noaa_xa[mask_noaa],'r--')
+        ax1.set_title('Surface CO at '+Sta[n]+' (Lat '+str(lat_noaa[0].values)+', Lon '+str(lon_noaa[0].values)+')')
+        line1 = 'E3SM mean:'+str(np.round(CO_sel_1D[mask].mean(),2))
+        line2 = 'E3SM trend:'+str(np.round(slope_e3sm*12,2))+' ppb/yr'
+        line3 = 'NOAA mean:'+str(np.round(CO_noaa[mask_noaa].mean().values,2))
+        line4 = 'NOAA trend:'+str(np.round(slope_noaa*12,2))+' ppb/yr'
+        ax1.legend([line1,line2, line3,line4])
 
-    ax2.plot(time_range_noaa[mask],diff[mask],'k')
-    ax2.plot(time_range_noaa[mask_noaa],diff_noaa[mask_noaa],'r')
-    ax2.set_xlabel('time')
-    #ax2.set_ylim(-60,60)
-    ax2.set_ylabel('Anomalies')
-    pylab.savefig(pathout+'NOAA_CO_'+Sta[n]+'.png', dpi=600)
+        ax2.plot(CO_noaa['time'][mask],diff[mask],'k')
+        ax2.plot(CO_noaa['time'][mask_noaa],diff_noaa[mask_noaa],'r')
+        ax2.set_xlabel('time')
+        #ax2.set_ylim(-60,60)
+        ax2.set_ylabel('Anomalies')
+        pylab.savefig(pathout+'NOAA_CO_'+Sta[n]+'.png', dpi=600)
+    else:
+        # plotting
+        fig, (ax1,ax2) = plt.subplots(2, 1,figsize=(10, 5))
+        ax1.plot(CO_noaa['time'],CO_noaa,'r')
+        ax1.plot(CO_noaa['time'][mask_noaa],lin_noaa_xa[mask_noaa],'r--')
+        ax1.set_title('Surface CO at '+Sta[n]+' (Lat '+str(lat_noaa[0].values)+', Lon '+str(lon_noaa[0].values)+')')
+        line3 = 'NOAA mean:'+str(np.round(CO_noaa[mask_noaa].mean().values,2))
+        line4 = 'NOAA trend:'+str(np.round(slope_noaa*12,2))+' ppb/yr'
+        ax1.legend([line3,line4])
+        print('E3SM data is not avaiable within this time period')
+        ax2.plot(CO_noaa['time'][mask_noaa],diff_noaa[mask_noaa],'r')
+        ax2.set_xlabel('time')
+        #ax2.set_ylim(-60,60)
+        ax2.set_ylabel('Anomalies')
+        pylab.savefig(pathout+'NOAA_CO_'+Sta[n]+'.png', dpi=600)
 
 EOF
 
