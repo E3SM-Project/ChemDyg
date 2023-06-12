@@ -38,7 +38,8 @@ Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
 tag="{{ tag }}"
-obsDir="{{reference_data_path}}"
+# diagnostics_base_path is set by zppy using the mache package
+obsDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
 results_dir=${tag}_${Y1}-${Y2}
 
 # Create temporary workdir
@@ -50,7 +51,7 @@ tsDir1={{ output }}/post/atm/{{ grid1 }}/ts/hourly/{{ '%dyr' % (ypf) }}
 tsDir2={{ output }}/post/atm/{{ grid2 }}/ts/hourly/{{ '%dyr' % (ypf) }}
 #tsDir={{ output }}/post/atm/{{ grid }}
 mkdir -p ts
-ln -s ${obsDir}/mda8.surfO3.*.nc ./ts
+ln -s ${obsDir}/surfO3/mda8.surfO3.*.nc ./ts
 #cd ts
 ln -s ${tsDir1}/O3_SRF_${Y1}*.nc ./ts/O3_SRF_{{ grid1 }}.nc
 ln -s ${tsDir2}/O3_SRF_${Y1}*.nc ./ts/O3_SRF_{{ grid2 }}.nc
