@@ -274,16 +274,18 @@ for i in range(len(O3EU_DJF)):
     O3_SEU_DJF[i] = (O3EU_DJF_SEU[i,:,:]*area_SEU[:,:]).sum()/area_SEU[:,:].sum()
 
 ndays = int(len(O3EU_JJA)/24)
-O3_ENA_JJA_24h = O3_ENA_JJA.reshape((ndays,24)).mean(axis=0)
-O3_WNA_JJA_24h = O3_WNA_JJA.reshape((ndays,24)).mean(axis=0)
-O3_NEU_JJA_24h = O3_NEU_JJA.reshape((ndays,24)).mean(axis=0)
-O3_SEU_JJA_24h = O3_SEU_JJA.reshape((ndays,24)).mean(axis=0)
+n_d = int(ndays*24)
+O3_ENA_JJA_24h = O3_ENA_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_WNA_JJA_24h = O3_WNA_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_NEU_JJA_24h = O3_NEU_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_SEU_JJA_24h = O3_SEU_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
 
 ndays = int(len(O3EU_DJF)/24)
-O3_ENA_DJF_24h = O3_ENA_DJF.reshape((ndays,24)).mean(axis=0)
-O3_WNA_DJF_24h = O3_WNA_DJF.reshape((ndays,24)).mean(axis=0)
-O3_NEU_DJF_24h = O3_NEU_DJF.reshape((ndays,24)).mean(axis=0)
-O3_SEU_DJF_24h = O3_SEU_DJF.reshape((ndays,24)).mean(axis=0)
+n_d = int(ndays*24)
+O3_ENA_DJF_24h = O3_ENA_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_WNA_DJF_24h = O3_WNA_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_NEU_DJF_24h = O3_NEU_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_SEU_DJF_24h = O3_SEU_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
 
 
 # ## read observations
@@ -613,8 +615,8 @@ for d in range(ndays):
 
 O3US_MDA8 = O3US_navg.max(axis=1)
 O3EU_MDA8 = O3EU_navg.max(axis=1)
-O3EU_MDA8_xr = xr.DataArray(O3EU_MDA8, coords=[day_timearray['time'],lat_EU,lon_EU], dims=["time","lat","lon"])
-O3US_MDA8_xr = xr.DataArray(O3US_MDA8, coords=[day_timearray['time'],lat_US,lon_US], dims=["time","lat","lon"])
+O3EU_MDA8_xr = xr.DataArray(O3EU_MDA8, coords=[day_timearray['time'][0:ndays],lat_EU,lon_EU], dims=["time","lat","lon"])
+O3US_MDA8_xr = xr.DataArray(O3US_MDA8, coords=[day_timearray['time'][0:ndays],lat_US,lon_US], dims=["time","lat","lon"])
 
 # US subregion: Western (WNA) and eastern (ENA) North America is split by 264°E
 lon1 = 234
@@ -635,16 +637,16 @@ O3_MDA8_ENA_1D = np.zeros(ndays)
 O3_MDA8_WNA_1D = np.zeros(ndays)
 O3_MDA8_NEU_1D = np.zeros(ndays)
 O3_MDA8_SEU_1D = np.zeros(ndays)
-for i in range(len(day_timearray)):
+for i in range(ndays):
     O3_MDA8_ENA_1D[i] = (O3_MDA8_ENA[i,:,:]*area_ENA[:,:]).sum()/area_ENA[:,:].sum()
     O3_MDA8_WNA_1D[i] = (O3_MDA8_WNA[i,:,:]*area_WNA[:,:]).sum()/area_WNA[:,:].sum()
     O3_MDA8_NEU_1D[i] = (O3_MDA8_NEU[i,:,:]*area_NEU[:,:]).sum()/area_NEU[:,:].sum()
     O3_MDA8_SEU_1D[i] = (O3_MDA8_SEU[i,:,:]*area_SEU[:,:]).sum()/area_SEU[:,:].sum()
 
-O3_MDA8_ENA_1D = xr.DataArray(O3_MDA8_ENA_1D, coords=[day_timearray['time']], dims=["time"])
-O3_MDA8_WNA_1D = xr.DataArray(O3_MDA8_WNA_1D, coords=[day_timearray['time']], dims=["time"])
-O3_MDA8_NEU_1D = xr.DataArray(O3_MDA8_NEU_1D, coords=[day_timearray['time']], dims=["time"])
-O3_MDA8_SEU_1D = xr.DataArray(O3_MDA8_SEU_1D, coords=[day_timearray['time']], dims=["time"])
+O3_MDA8_ENA_1D = xr.DataArray(O3_MDA8_ENA_1D, coords=[day_timearray['time'][0:ndays]], dims=["time"])
+O3_MDA8_WNA_1D = xr.DataArray(O3_MDA8_WNA_1D, coords=[day_timearray['time'][0:ndays]], dims=["time"])
+O3_MDA8_NEU_1D = xr.DataArray(O3_MDA8_NEU_1D, coords=[day_timearray['time'][0:ndays]], dims=["time"])
+O3_MDA8_SEU_1D = xr.DataArray(O3_MDA8_SEU_1D, coords=[day_timearray['time'][0:ndays]], dims=["time"])
 
 # calculate monthly mean
 O3_MDA8_ENA_month = np.zeros(12)
