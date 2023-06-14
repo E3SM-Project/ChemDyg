@@ -38,8 +38,6 @@ Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
 tag="{{ tag }}"
-referDir="{{reference_data_path}}"
-results_dir=${tag}_${Y1}-${Y2}
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`

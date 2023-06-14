@@ -38,7 +38,8 @@ Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
 tag="{{ tag }}"
-referDir="{{reference_data_path}}"
+# diagnostics_base_path is set by zppy using the mache package
+referDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
 results_dir=${tag}_${Y1}-${Y2}
 
 # Create temporary workdir
@@ -50,7 +51,7 @@ tsDir={{ output }}/post/atm/{{ grid }}/clim/{{ '%dyr' % (ypf) }}
 mkdir -p climo
 #cd ts
 ln -s ${tsDir}/*ANN*.nc ./climo
-ln -s ${referDir}/v2.LR.amip_0101_ANN_198501_201412_climo.nc ./climo
+ln -s ${referDir}/E3SMv2/v2.LR.amip_0101_ANN_198501_201412_climo.nc ./climo
 #cd ..
 # Create symbolic links to input files
 #input={{ input }}/{{ input_subdir }}
