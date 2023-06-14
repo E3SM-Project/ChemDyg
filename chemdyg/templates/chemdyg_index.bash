@@ -111,7 +111,7 @@ import pandas as pd
 pathout = './'
 
 indexfile = open(pathout+'index.html',"w")
-index = '<h> E3SM chem diagnostics package v1.1 (September 2022) </h>'
+index = '<h> E3SM chemistry diagnostics package (ChemDyg) </h>'
 index = index + '<pre> Test: ${short} </pre>'
 index = index + '<pre> Reference: Observations and Reanalysis </pre>'
 index = index + '<pre>   </pre>'
