@@ -219,8 +219,6 @@ for var in range(len(varname)):
    # write out annual chem tendency
             line_ann = line_ann + '<pre> '+ format('O3 burden (Tg)','28s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TOZ_total)) +'</pre>'
-            line_ann = line_ann + '<pre> '+ format('O3 emission (Tg/yr)','28s')
-            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDS_total)*unit_covet) +'</pre>'
             line_ann = line_ann + '<pre> '+ format('O3 deposition (Tg/yr)','28s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDD_total)*unit_covet) +'</pre>'
             line_ann = line_ann + '<pre> '+ format('O3 production (Tg/yr)','28s')
