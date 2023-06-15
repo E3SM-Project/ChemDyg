@@ -108,6 +108,7 @@ import numpy as np
 import xarray as xr
 import pandas as pd
 import pylab
+from matplotlib.dates import DateFormatter
 
 filename = '${short}'
 path = './ts/'
@@ -115,6 +116,8 @@ pathout = './'
 refer = xr.open_dataset(path+filename+'.eam.h0.${Y1}-01.nc')
 file_in = xr.open_mfdataset(path+filename+'.${eamfile}.*')
 years = ${y2} - ${y1} +1 
+startyear = ${y1}
+endyear = ${y2}
 
 lat = file_in['lat']
 
@@ -165,15 +168,19 @@ TOZ_array = TOZ_min[startindex:endindex].values.reshape((years,365))
 TOZ_mean = TOZ_array.mean(axis=0)
 TOZ_std = TOZ_array.std(axis=0)
 
-fig = plt.figure(figsize=(10,5))
-plt.plot(time_range[0:365],TOZ_mean, label ='E3SMv2')
-plt.fill_between(time_range[0:365],TOZ_mean+TOZ_std,TOZ_mean-TOZ_std, alpha=.5, linewidth=0)
-plt.plot(time_range[0:365],O3_mean, label ='TOZ(64S)')
-plt.fill_between(time_range[0:365],O3_mean+O3_std,O3_mean-O3_std, alpha=.5, linewidth=0)
+npdate = np.array(time_range[0:365])
+fig, ax = plt.subplots(figsize=(10, 5))
+plt.plot(npdate,TOZ_mean, label ='E3SMv2')
+plt.fill_between(npdate,TOZ_mean+TOZ_std,TOZ_mean-TOZ_std, alpha=.5, linewidth=0)
+plt.plot(npdate,O3_mean, label ='TOZ(64S)')
+plt.fill_between(npdate,O3_mean+O3_std,O3_mean-O3_std, alpha=.5, linewidth=0)
 plt.xlim(time_range[181],time_range[365])
+date_form = DateFormatter("%b-%d")
+ax.xaxis.set_major_formatter(date_form)
+
 plt.legend(loc = 'upper left')
-plt.title('SH minimum total O3')
-plt.xlabel('Time')
+plt.title('SH minimum total O3 ('+str(startyear)+' - '+str(endyear)+')')
+plt.xlabel('Date')
 plt.ylabel('O3 conc. (DU)',fontsize='large')
 pylab.savefig(pathout+'TOZ_PDF_climo.png', dpi=300)
 
