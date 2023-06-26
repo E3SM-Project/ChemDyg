@@ -120,10 +120,16 @@ startyear = ${y1}
 endyear = ${y2}
 
 lat = file_in['lat']
-
+variablelist = list(refer.keys())
+if 'AREA' in variablelist:
+    AREA = refer['AREA'][0,:] #m2
+else:
+    rearth = 6.37122e6 # Earth radius: m
+    AREA = refer['area']*rearth*rearth #m2
+    
 TOZ_sel = file_in['TCO'].where((lat < -60), drop=True)+file_in['SCO'].where((lat < -60), drop=True)
-AREA_sel = refer['AREA'].where((lat < -60), drop=True)
-AREA_64S = refer['AREA'].where((lat < -64), drop=True).sum()
+AREA_sel = AREA.where((lat < -60), drop=True)
+AREA_64S = AREA.where((lat < -64), drop=True).sum()
 AREA_64S = np.array(AREA_64S)
 TOZ_min = TOZ_sel.min(axis=1)
 
@@ -137,7 +143,7 @@ O3_64S = np.zeros(years*365)
 
 for i in range(startindex,endindex):
     ii = i - startindex
-    d = {'TOZ': np.array(TOZ_sel[i]), 'AREA': np.array(AREA_sel[0])}
+    d = {'TOZ': np.array(TOZ_sel[i]), 'AREA': np.array(AREA_sel)}
     df = pd.DataFrame(data=d)
 
     df_sort = df.sort_values(by=['TOZ'])
