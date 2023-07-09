@@ -66,7 +66,7 @@ do
   done
 done
 
-ln -s ${input}/${case}.eam.h0.${y1}-01.nc ./ts
+ln -s ${input}/${case}.eam.h0.${Y1}-01.nc ./ts
 
 {%- if frequency != 'monthly' %}
 # For non-monthly input files, need to add the last file of the previous year
