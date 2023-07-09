@@ -284,6 +284,10 @@ fi
 # Copy files
 cp *.html ${www}/${case}/e3sm_chem_diags/plots/
 cp *.txt ${www}/${case}/e3sm_chem_diags/plots/
+
+# Change file permissions
+chmod -R go+rX,go-w ${www}/${case}/e3sm_chem_diags/plots/
+
 if [ $? != 0 ]; then
   cd ..
   echo 'ERROR (3)' > {{ prefix }}.status

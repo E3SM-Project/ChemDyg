@@ -206,6 +206,9 @@ if [ -d "${f}" ]; then
    mv ./*.png ${www}/${case}/e3sm_chem_diags/plots/
 fi
 
+# Change file permissions
+chmod -R go+rX,go-w ${www}/${case}/e3sm_chem_diags/plots/
+
 if [ $? != 0 ]; then
   cd ..
   echo 'ERROR (2)' > {{ prefix }}.status
