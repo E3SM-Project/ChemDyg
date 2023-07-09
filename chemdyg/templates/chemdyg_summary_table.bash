@@ -166,7 +166,6 @@ for var in range(len(varname)):
 
             SCO = h0_in['SCO'] *2.1415e-14
             TCO = h0_in['TCO'] *2.1415e-14 #DU to Tg
-            TDS = h0_in[varname[var]+'_2DTDS'+layer[ll]] #kg/m2/sec
             TDD = h0_in[varname[var]+'_2DTDD'+layer[ll]]
             CIP = h0_in[varname[var]+'_2DCIP'+layer[ll]] #kg/m2/sec
             CIL = h0_in[varname[var]+'_2DCIL'+layer[ll]] #kg/m2/sec
@@ -174,7 +173,6 @@ for var in range(len(varname)):
             TOZ = SCO+TCO
 
             MSD_total = ((MSD*area).sum(axis=1)).mean() #kg
-            TDS_total = (dt*(TDS*area).sum(axis=1)).mean() #kg
             TDD_total = (dt*(TDD*area).sum(axis=1)).mean() #kg
             CIP_total = (dt*(CIP*area).sum(axis=1)).mean()
             CIL_total = (dt*(-CIL*area).sum(axis=1)).mean()
