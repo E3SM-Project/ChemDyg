@@ -148,7 +148,7 @@ endindex = startindex + years*365
 
 O3_area = TOZ_min.copy()
 
-for i in range(startindex,endindex):
+for i in range(startindex,t_period):
     d = {'TOZ': np.array(TOZ_sel[i]), 'AREA': np.array(AREA_sel[0])}
     df = pd.DataFrame(data=d)
 
