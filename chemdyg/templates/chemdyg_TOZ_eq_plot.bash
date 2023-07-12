@@ -120,15 +120,16 @@ startyear = ${y1}
 endyear = ${y2}
 
 lat = file_in['lat']
+lat2 = refer['lat']
 
 TOZ_sel = file_in['TCO'].where((lat < -60), drop=True)+file_in['SCO'].where((lat < -60), drop=True)
-AREA_sel = refer['AREA'].where((lat < -60), drop=True)
-AREA_64S = refer['AREA'].where((lat < -64), drop=True).sum()
+AREA_sel = refer['AREA'].where((lat2 < -60), drop=True)
+AREA_64S = refer['AREA'].where((lat2 < -64), drop=True).sum()
 AREA_64S = np.array(AREA_64S)
 TOZ_min = TOZ_sel.min(axis=1)
 
 t_period = len(TOZ_sel)
-startdate = str(np.array(file_in['time'].dt.year[0]))+'-'+str(np.array(file_in['time'].dt.month[0]))+'-'+str(np.array(file_in['time'].dt.day[0]))
+startdate = str(2000)+'-'+str(np.array(file_in['time'].dt.month[0]))+'-'+str(np.array(file_in['time'].dt.day[0]))
 time_range = pd.date_range(start=startdate, periods=t_period, freq='D')
 startindex = time_range.is_year_start.tolist().index(True)
 endindex = startindex + years*365
