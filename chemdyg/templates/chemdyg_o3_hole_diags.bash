@@ -141,7 +141,7 @@ AREA_sel = refer['AREA'].where((lat < 0), drop=True)
 TOZ_min = TOZ_sel.min(axis=1)
 
 t_period = len(TOZ_sel)
-startdate = str(np.array(file_in['time'].dt.year[0]))+'-'+str(np.array(file_in['time'].dt.month[0]))+'-'+str(np.array(file_in['time'].dt.day[0]))
+startdate = str(2000)+'-'+str(np.array(file_in['time'].dt.month[0]))+'-'+str(np.array(file_in['time'].dt.day[0]))
 time_range = pd.date_range(start=startdate, periods=t_period, freq='D')
 startindex = time_range.is_year_start.tolist().index(True)
 endindex = startindex + years*365
@@ -163,11 +163,8 @@ for i in range(startindex,endindex):
     else:
         O3_area[i] = 0.
 
-yearlist = np.arange(startyear,endyear+1)
-O3_area_year = O3_area.sel(time=O3_area.time.dt.year.isin(yearlist))
-O3_area_time = O3_area_year.sel(time=O3_area_year.time.dt.month.isin([7, 8, 9, 10, 11, 12]))
-TOZ_min_year = TOZ_min.sel(time=TOZ_min.time.dt.year.isin(yearlist))
-TOZ_min_time = TOZ_min_year.sel(time=TOZ_min_year.time.dt.month.isin([7, 8, 9, 10, 11, 12]))
+O3_area_time = O3_area[startindex:endindex].sel(time=O3_area[startindex:endindex].time.dt.month.isin([7, 8, 9, 10, 11, 12]))
+TOZ_min_time = TOZ_min[startindex:endindex].sel(time=TOZ_min[startindex:endindex].time.dt.month.isin([7, 8, 9, 10, 11, 12]))
 
 #-------- climo plot ---------------
 O3_array = O3_area_time.values.reshape((years,184))
