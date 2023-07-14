@@ -92,7 +92,7 @@ def chemdyg(path, config, scriptDir, existing_bundles, job_ids_file):
                 prefix = 'chemdyg_%s_%04d-%04d' % (sub,c['year1'],c['year2'])
                 template = templateEnv.get_template( 'chemdyg_nox_emis_plots.bash' )
             elif c['subsection'] == "index":
-                prefix = 'chemdyg_index'
+                prefix = 'chemdyg_index_%04d-%04d' % (c['year1'],c['year2'])
                 template = templateEnv.get_template( 'chemdyg_index.bash' )
             else:
                 sub = c['grid']

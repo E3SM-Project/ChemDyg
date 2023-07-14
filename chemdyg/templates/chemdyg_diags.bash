@@ -408,7 +408,7 @@ echo ===== COPY FILES TO WEB SERVER =====
 echo
 
 # Create top-level directory
-f=${www}/${case}/e3sm_chem_diags/plots/
+f=${www}/${case}/e3sm_chem_diags_${Y1}_${Y2}/plots/
 mkdir -p ${f}
 if [ $? != 0 ]; then
   cd ..
@@ -417,11 +417,11 @@ if [ $? != 0 ]; then
 fi
 
 # Copy files
-cp *.html ${www}/${case}/e3sm_chem_diags/plots/
-cp *.txt ${www}/${case}/e3sm_chem_diags/plots/
+cp *.html ${f}
+cp *.txt ${f}
 
 # Change file permissions
-chmod -R go+rX,go-w ${www}/${case}/e3sm_chem_diags/plots/
+chmod -R go+rX,go-w ${f}
 
 if [ $? != 0 ]; then
   cd ..

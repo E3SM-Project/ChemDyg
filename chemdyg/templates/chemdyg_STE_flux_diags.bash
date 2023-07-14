@@ -283,7 +283,9 @@ echo ===== COPY FILES TO WEB SERVER =====
 echo
 
 # Create top-level directory
-f=${www}/${case}/e3sm_chem_diags/plots/
+tmp_Y1=`printf "%04d" ${y1}`
+tmp_Y2=`printf "%04d" ${y2}`
+f=${www}/${case}/e3sm_chem_diags_${tmp_Y1}_${tmp_Y2}/plots/
 mkdir -p ${f}
 if [ $? != 0 ]; then
   cd ..
@@ -292,10 +294,10 @@ if [ $? != 0 ]; then
 fi
 
 # Copy files
-mv *.png ${www}/${case}/e3sm_chem_diags/plots/
+mv *.png ${f}
 
 # Change file permissions
-chmod -R go+rX,go-w ${www}/${case}/e3sm_chem_diags/plots/
+chmod -R go+rX,go-w ${f}
 
 if [ $? != 0 ]; then
   cd ..

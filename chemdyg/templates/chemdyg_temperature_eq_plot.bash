@@ -221,13 +221,14 @@ echo ===== COPY FILES TO WEB SERVER =====
 echo
 
 # Create top-level directory
-f=${www}/${case}/e3sm_chem_diags/plots/
+f=${www}/${case}/e3sm_chem_diags_${Y1}_${Y2}/plots/
+mkdir -p ${f}
 if [ -d "${f}" ]; then
-   mv ./*.png ${www}/${case}/e3sm_chem_diags/plots/
+   mv ./*.png ${f}
 fi
 
 # Change file permissions
-chmod -R go+rX,go-w ${www}/${case}/e3sm_chem_diags/plots/
+chmod -R go+rX,go-w ${f}
 
 if [ $? != 0 ]; then
   cd ..
