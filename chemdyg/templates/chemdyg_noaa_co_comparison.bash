@@ -125,7 +125,11 @@ e3smdataname = 'CO_SRF_'+startyear+'01_'+endyear+'12.nc'
 file_in = xr.open_dataset(path+e3smdataname)
 
 timeperiod = len(file_in['time'])
-startdate = str(np.array(file_in['time'].dt.year[0]))+'-'+str(np.array(file_in['time'].dt.month[0]))+'-01'
+if np.array(file_in['time'].dt.year[0]) < 1980:
+    startdate = str(2030)+'-'+str(np.array(file_in['time'].dt.month[0])-1)+'-01'
+else:
+    startdate = str(np.array(file_in['time'].dt.year[0]))+'-'+str(np.array(file_in['time'].dt.month[0])-1)+'-01'
+
 time_range_month = pd.date_range(startdate,  periods=timeperiod, freq='M')
 file_in['time'] = time_range_month
 
