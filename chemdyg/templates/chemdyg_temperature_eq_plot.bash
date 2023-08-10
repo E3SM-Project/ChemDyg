@@ -116,10 +116,14 @@ refer = xr.open_dataset(path+filename+'.eam.h0.${Y1}-01.nc')
 file_in = xr.open_mfdataset(path+filename+'.${eamfile}.*')
 
 lat = file_in['lat']
+lat2 = refer['lat']
+rearth = 6.37122e6
+AREA_in = refer['area'] * rearth * rearth
+
 TOZ_h = file_in['T'][:,13].where((lat < -55), drop=True)
 TOZ_m = file_in['T'][:,21].where((lat < -55), drop=True)
 TOZ_l = file_in['T'][:,29].where((lat < -55), drop=True)
-AREA_sel = refer['AREA'].where((lat < -55), drop=True)
+AREA_sel = AREA_in.where((lat2 < -55), drop=True)
 TOZ_h_sel = TOZ_h.sel(time=TOZ_h.time.dt.month.isin([6,7,8,9,10,11,12]))
 TOZ_m_sel = TOZ_m.sel(time=TOZ_m.time.dt.month.isin([6,7,8,9,10,11,12]))
 TOZ_l_sel = TOZ_l.sel(time=TOZ_l.time.dt.month.isin([6,7,8,9,10,11,12]))
@@ -129,7 +133,7 @@ temp_lat_m = np.zeros(10)
 temp_lat_l = np.zeros(10)
 for i in range(0,20,2):
     ilat = i + 60
-    AREA_refer = refer['AREA'].where((lat < -ilat), drop=True).sum()
+    AREA_refer = AREA_in.where((lat2 < -ilat), drop=True).sum()
     AREA_refer = np.array(AREA_refer)
 
     t_period = len(TOZ_h_sel['time'])
@@ -139,7 +143,7 @@ for i in range(0,20,2):
     temp_l = np.zeros(t_period) # height from layer 13 to 29
 
     for t in range(t_period):
-        dh = {'TOZ': np.array(TOZ_h_sel[t]), 'AREA': np.array(AREA_sel[0])}
+        dh = {'TOZ': np.array(TOZ_h_sel[t]), 'AREA': np.array(AREA_sel)}
         dfh = pd.DataFrame(data=dh)
 
         dfh_sort = dfh.sort_values(by=['TOZ'])
@@ -155,7 +159,7 @@ for i in range(0,20,2):
         TOZ_h_index = result_h[0].min()
         temp_h[t] = (TOZ_h_sort[0:TOZ_h_index-1]*AREA_h_sort[0:TOZ_h_index-1]).mean()/(AREA_h_sort[0:TOZ_h_index-1].mean())
         # ---------
-        dm = {'TOZ': np.array(TOZ_m_sel[t]), 'AREA': np.array(AREA_sel[0])}
+        dm = {'TOZ': np.array(TOZ_m_sel[t]), 'AREA': np.array(AREA_sel)}
         dfm = pd.DataFrame(data=dm)
 
         dfm_sort = dfm.sort_values(by=['TOZ'])
@@ -172,7 +176,7 @@ for i in range(0,20,2):
         temp_m[t] = (TOZ_m_sort[0:TOZ_m_index-1]*AREA_m_sort[0:TOZ_m_index-1]).mean()/(AREA_m_sort[0:TOZ_m_index-1].mean())
 
         # ---------
-        dl = {'TOZ': np.array(TOZ_l_sel[t]), 'AREA': np.array(AREA_sel[0])}
+        dl = {'TOZ': np.array(TOZ_l_sel[t]), 'AREA': np.array(AREA_sel)}
         dfl = pd.DataFrame(data=dl)
 
         dfl_sort = dfl.sort_values(by=['TOZ'])

@@ -119,7 +119,8 @@ filename = short_name+'_ANN_'+startyear+'01_'+endyear+'12_climo.nc'
 
 file_in = xr.open_dataset(path+filename)
 
-AREA = file_in['AREA'][0,:,:] #m2
+rearth = 6.37122e6
+AREA = file_in['area'] * rearth * rearth #m2
 lat = file_in['lat']
 lon = file_in['lon']
 lev = file_in['lev']

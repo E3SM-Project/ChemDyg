@@ -134,10 +134,11 @@ startyear = ${y1}
 endyear = ${y2}
 years = endyear - startyear + 1
 lat = refer['lat']
-AREA_sel = refer['AREA']
+rearth = 6.37122e6
+AREA_in = refer['area'] * rearth * rearth
 
 TOZ_sel = file_in['TCO'].where((lat < 0), drop=True)+file_in['SCO'].where((lat < 0), drop=True)
-AREA_sel = refer['AREA'].where((lat < 0), drop=True)
+AREA_sel = AREA_in.where((lat < 0), drop=True)
 TOZ_min = TOZ_sel.min(axis=1)
 
 t_period = len(TOZ_sel)
@@ -149,7 +150,7 @@ endindex = startindex + years*365
 O3_area = TOZ_min.copy()
 
 for i in range(startindex,endindex):
-    d = {'TOZ': np.array(TOZ_sel[i]), 'AREA': np.array(AREA_sel[0])}
+    d = {'TOZ': np.array(TOZ_sel[i]), 'AREA': np.array(AREA_sel)}
     df = pd.DataFrame(data=d)
 
     df_sort = df.sort_values(by=['TOZ'])
