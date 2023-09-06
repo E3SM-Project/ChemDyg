@@ -125,7 +125,7 @@ lat2 = refer['lat']
 rearth = 6.37122e6
 AREA_in = refer['area'] * rearth * rearth
 
-TOZ_sel = file_in['TCO'].where((lat < -60), drop=True)+file_in['SCO'].where((lat < -60), drop=True)
+TOZ_sel = file_in['TCO'].where((lat.compute() < -60), drop=True)+file_in['SCO'].where((lat.compute() < -60), drop=True)
 AREA_sel = AREA_in.where((lat2 < -60), drop=True)
 AREA_64S = AREA_in.where((lat2 < -64), drop=True).sum()
 AREA_64S = np.array(AREA_64S)
@@ -160,7 +160,7 @@ for i in range(startindex,endindex):
 fig = plt.figure(figsize=(10,5))
 plt.plot(time_range[startindex:endindex],O3_64S)
 plt.title('Total column ozone conc. with equivalent latitude (64S)')
-plt.xlabel('Time')
+plt.xlabel('Time (start in year 2000)')
 plt.ylabel('O3 conc. (DU)',fontsize='large')
 pylab.savefig(pathout+'TOZ_PDF_timeseries.png', dpi=300)
 
