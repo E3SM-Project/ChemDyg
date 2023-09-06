@@ -120,9 +120,9 @@ lat2 = refer['lat']
 rearth = 6.37122e6
 AREA_in = refer['area'] * rearth * rearth
 
-TOZ_h = file_in['T'][:,13].where((lat < -55), drop=True)
-TOZ_m = file_in['T'][:,21].where((lat < -55), drop=True)
-TOZ_l = file_in['T'][:,29].where((lat < -55), drop=True)
+TOZ_h = file_in['T'][:,13].where((lat.compute() < -55), drop=True)
+TOZ_m = file_in['T'][:,21].where((lat.compute() < -55), drop=True)
+TOZ_l = file_in['T'][:,29].where((lat.compute() < -55), drop=True)
 AREA_sel = AREA_in.where((lat2 < -55), drop=True)
 TOZ_h_sel = TOZ_h.sel(time=TOZ_h.time.dt.month.isin([6,7,8,9,10,11,12]))
 TOZ_m_sel = TOZ_m.sel(time=TOZ_m.time.dt.month.isin([6,7,8,9,10,11,12]))
