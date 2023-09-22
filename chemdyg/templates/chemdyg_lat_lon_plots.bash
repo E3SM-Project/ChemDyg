@@ -37,7 +37,15 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -121,6 +129,7 @@ filename = short_name+'_ANN_'+startyear+'01_'+endyear+'12_climo.nc'
 file_in = xr.open_dataset(path+filename)
 
 TMQ = file_in['TMQ'][0,:,:]
+TMQ.to_netcdf(pathout+'TMQ_'+startyear+'-'+endyear+'.nc')
 
 fig = plt.figure(figsize=(20,10))
 ax = plt.axes(projection=ccrs.PlateCarree(central_longitude=180))
@@ -168,6 +177,9 @@ fi
 
 # Copy files
 mv *.png ${f}
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
+fi
 
 # Change file permissions
 chmod -R go+rX,go-w ${f}

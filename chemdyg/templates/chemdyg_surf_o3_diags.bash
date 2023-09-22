@@ -37,10 +37,17 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
 # diagnostics_base_path is set by zppy using the mache package
 obsDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
-results_dir=${tag}_${Y1}-${Y2}
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -193,6 +200,10 @@ O3local_US[O3local_US == 0.] = 'nan'
 # ## calculate diurnal cycle
 O3EU_xr = xr.DataArray(O3local_EU, coords=[time_EU,lat_EU,lon_EU], dims=["time","lat","lon"])
 O3US_xr = xr.DataArray(O3local_US, coords=[time_US,lat_US,lon_US], dims=["time","lat","lon"])
+ds1 = O3EU_xr.to_dataset(name='sfcO3_EU')
+ds2 = O3US_xr.to_dataset(name='sfcO3_US')
+ds = xr.merge([ds1, ds2])
+ds.to_netcdf(pathout+'E3SM_sfcO3_${y1}-${y2}.nc')
 
 O3EU_JJA = O3EU_xr.sel(time=O3EU_xr.time.dt.month.isin([6, 7, 8]))
 O3EU_DJF = O3EU_xr.sel(time=O3EU_xr.time.dt.month.isin([12, 1, 2]))
@@ -777,6 +788,9 @@ f=${www}/${case}/e3sm_chem_diags_${Y1}_${Y2}/plots/
 mkdir -p ${f}
 if [ -d "${f}" ]; then
    mv ./*.png ${f}
+fi
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
 fi
 
 # Change file permissions

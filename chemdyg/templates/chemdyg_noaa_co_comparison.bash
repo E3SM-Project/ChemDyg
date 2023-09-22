@@ -37,10 +37,17 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
 # diagnostics_base_path is set by zppy using the mache package
 noaaDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
-results_dir=${tag}_${Y1}-${Y2}
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -189,6 +196,8 @@ for n in range(len(Sta)):
     lin_noaa = nmonth_noaa*slope_noaa+intercept
     lin_noaa_xa = xr.DataArray(lin_noaa, coords=[time_range_noaa], dims=["time"])
     diff_noaa = CO_noaa - lin_noaa_xa
+    CO_sel_1D_xr = xr.DataArray(CO_sel_1D, name='CO', coords=[time_range_noaa], dims=["time"])
+    CO_sel_1D_xr.to_netcdf(pathout+'E3SM_CO_'+startyear+'-'+endyear+'.nc')
 
     nmonth = np.arange(0,len(CO_sel_1D),1)
     mask = ~np.isnan(CO_sel_1D)
@@ -261,6 +270,9 @@ fi
 
 # Copy files
 mv *.png ${f}
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
+fi
 
 # Change file permissions
 chmod -R go+rX,go-w ${f}

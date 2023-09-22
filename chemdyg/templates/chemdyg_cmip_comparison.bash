@@ -37,10 +37,17 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
+ncfile_save="{{ ncfile_save }}"
 # diagnostics_base_path is set by zppy using the mache package
 cmipDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
-results_dir=${tag}_${Y1}-${Y2}
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -167,6 +174,7 @@ E3SM_long = np.zeros(t_end)
 E3SM_long[0:year_start] = 'NAN'
 E3SM_long[year_start:t_end] = E3SM_TCO[:].values
 E3SM_xr = xr.DataArray(E3SM_long, coords=[CESM_in['time'][0:t_end]], dims=["time"], name='TCO')
+E3SM_xr.to_netcdf(pathout+'E3SM_cmip_'+startyear+'-'+endyear+'.nc')
 
 time_range_year = pd.date_range('1850-01-01',  periods=timeperiod_year, freq='Y')
 CESM_ANN = CESM_TCO.groupby('time.year').mean('time')
@@ -233,6 +241,9 @@ fi
 
 # Copy files
 mv *.png ${f}
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
+fi
 
 # Change file permissions
 chmod -R go+rX,go-w ${f}

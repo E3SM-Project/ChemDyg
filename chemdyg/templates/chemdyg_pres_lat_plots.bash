@@ -37,10 +37,17 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
 # diagnostics_base_path is set by zppy using the mache package
 referDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
-results_dir=${tag}_${Y1}-${Y2}
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -141,6 +148,10 @@ o3_2d = o3.mean(axis=2)
 o3_refer_2d = o3_refer.mean(axis=2)
 o3_new = o3_2d.copy()
 o3_refer_new = o3_refer_2d.copy()
+ds1 = o3_new.to_dataset()
+ds2 = o3_refer_new.to_dataset(name="O3_v2")
+ds = xr.merge([ds1, ds2],compat='override')
+ds.to_netcdf(pathout+'E3SM_O3_PLatcomparison_'+startyear+'-'+endyear+'.nc')
 
 Q = file_in['Q'][0,:,:,:]*28.96/18
 Q_refer = refer_in['Q'][0,:,:,:]*28.96/18
@@ -148,6 +159,10 @@ Q_2d = Q.mean(axis=2)
 Q_refer_2d = Q_refer.mean(axis=2)
 Q_new = Q_2d.copy()
 Q_refer_new = Q_refer_2d.copy()
+ds1 = Q_new.to_dataset()
+ds2 = Q_refer_new.to_dataset(name="Q_v2")
+ds = xr.merge([ds1, ds2],compat='override')
+ds.to_netcdf(pathout+'E3SM_Q_PLatcomparison_'+startyear+'-'+endyear+'.nc')
 
 T = file_in['T'][0,:,:,:]
 T_refer = refer_in['T'][0,:,:,:]
@@ -155,6 +170,10 @@ T_2d = T.mean(axis=2)
 T_refer_2d = T_refer.mean(axis=2)
 T_new = T_2d.copy()
 T_refer_new = T_refer_2d.copy()
+ds1 = T_new.to_dataset()
+ds2 = T_refer_new.to_dataset(name="T_v2")
+ds = xr.merge([ds1, ds2],compat='override')
+ds.to_netcdf(pathout+'E3SM_Temp_PLatcomparison_'+startyear+'-'+endyear+'.nc')
 
 theda = T*(100000/lev)**0.286
 theda_refer = T_refer*(100000/lev)**0.286
@@ -162,6 +181,10 @@ theda_2d = theda.mean(axis=2)
 theda_refer_2d = theda_refer.mean(axis=2)
 theda_new = theda_2d.copy()
 theda_refer_new = theda_refer_2d.copy()
+ds1 = theda_new.to_dataset(name="theda")
+ds2 = theda_refer_new.to_dataset(name="theda_v2")
+ds = xr.merge([ds1, ds2],compat='override')
+ds.to_netcdf(pathout+'E3SM_theda_PLatcomparison_'+startyear+'-'+endyear+'.nc')
 
 for i in range(180):
     f = interpolate.interp1d(lev_2d[:,i], o3_2d[:,i])
@@ -470,6 +493,9 @@ fi
 
 # Copy files
 mv *.png ${f}
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
+fi
 
 # Change file permissions
 chmod -R go+rX,go-w ${f}

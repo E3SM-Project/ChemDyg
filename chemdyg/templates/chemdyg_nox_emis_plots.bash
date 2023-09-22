@@ -37,7 +37,15 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -136,6 +144,13 @@ for i in range(len(lev)):
     NOx_acf_3d[i,:,:] = NOx_acf[i,:,:] * AREA # Tg N/m2/year ->Tg N/year
     NOx_lgt_3d[i,:,:] = NOx_lgt[i,:,:] * AREA
 
+NOx_acf_xr = NOx_acf_3d.assign_attrs(units="Tg N/year", description="NOx aircraft emission")
+NOx_lgt_xr = NOx_lgt_3d.assign_attrs(units="Tg N/year", description="NOx lightning emission")
+ds1 = NOx_acf_xr.to_dataset()
+ds2 = NOx_lgt_xr.to_dataset()
+ds = xr.merge([ds1, ds2])
+ds.to_netcdf(pathout+'E3SM_NOx_emission_'+startyear+'-'+endyear+'.nc')
+
 NOx_acf_1d = NOx_acf_3d.sum(axis=1).sum(axis=1)
 NOx_acf_2d = NOx_acf_3d.sum(axis=0)
 NOx_lgt_1d = NOx_lgt_3d.sum(axis=1).sum(axis=1)
@@ -216,6 +231,9 @@ fi
 
 # Copy files
 mv *.png ${f}
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
+fi
 
 # Change file permissions
 chmod -R go+rX,go-w ${f}

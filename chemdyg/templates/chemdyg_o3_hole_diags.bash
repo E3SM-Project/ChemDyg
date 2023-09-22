@@ -38,10 +38,17 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
 # diagnostics_base_path is set by zppy using the mache package
 obsDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
-results_dir=${tag}_${Y1}-${Y2}
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -49,15 +56,11 @@ cd ${workdir}
 
 # Create local links to input climo files
 tsDir={{ output }}/post/atm/{{ grid }}/ts/monthly/{{ '%dyr' % (ypf) }}
-#tsDir={{ output }}/post/atm/{{ grid }}
 mkdir -p ts
 mkdir -p figs
 mkdir -p data
 ln -s ${obsDir}/O3_hole/*_obs.nc ./ts
-#cd ts
-#ln -s ${tsDir}/TCO*.nc ./ts
-#ln -s ${cmipDir}/*TCO.nc ./ts
-#cd ..
+
 # Create symbolic links to input files
 input={{ input }}/{{ input_subdir }}
 eamfile={{ input_files }}
@@ -164,6 +167,11 @@ for i in range(startindex,endindex):
     else:
         O3_area[i] = 0.
 
+ds1 = O3_area.to_dataset(name='O3_area')
+ds2 = TOZ_min.to_dataset(name='TOZ_min')
+ds1.to_netcdf(pathout+'E3SM_O3_area_${y1}-${y2}.nc')
+ds2.to_netcdf(pathout+'E3SM_TOZ_min_${y1}-${y2}.nc')
+
 O3_area_time = O3_area[startindex:endindex].sel(time=O3_area[startindex:endindex].time.dt.month.isin([7, 8, 9, 10, 11, 12]))
 TOZ_min_time = TOZ_min[startindex:endindex].sel(time=TOZ_min[startindex:endindex].time.dt.month.isin([7, 8, 9, 10, 11, 12]))
 
@@ -224,6 +232,9 @@ f=${www}/${case}/e3sm_chem_diags_${Y1}_${Y2}/plots/
 mkdir -p ${f}
 if [ -d "${f}" ]; then
    mv ./*.png ${f}
+fi
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
 fi
 
 # Change file permissions

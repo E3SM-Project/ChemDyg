@@ -37,8 +37,15 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
-results_dir=${tag}_${Y1}-${Y2}
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -157,6 +164,10 @@ for i in range(startindex,endindex):
     TOZ_index = result[0].min()
     O3_64S[ii] = (TOZ_sort[0:TOZ_index-1]*AREA_sort[0:TOZ_index-1]).mean()/(AREA_sort[0:TOZ_index-1].mean())
 
+O3_64S_xr = xr.DataArray(O3_64S, name = 'TOZ_64S',coords=[time_range[startindex:endindex]], dims=["time"])
+O3_64S_xr = O3_64S_xr.assign_attrs(units="DU", description='Total column ozone conc. with equivalent latitude (64S)')
+O3_64S_xr.to_netcdf(pathout+'E3SM_TOZ_64S_${y1}-${y2}.nc')
+
 fig = plt.figure(figsize=(10,5))
 plt.plot(time_range[startindex:endindex],O3_64S)
 plt.title('Total column ozone conc. with equivalent latitude (64S)')
@@ -209,6 +220,9 @@ f=${www}/${case}/e3sm_chem_diags_${Y1}_${Y2}/plots/
 mkdir -p ${f}
 if [ -d "${f}" ]; then
    mv ./*.png ${f}
+fi
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
 fi
 
 # Change file permissions

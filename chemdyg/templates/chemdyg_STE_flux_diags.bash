@@ -35,7 +35,15 @@ www="{{ www }}"
 y1={{ year1 }}
 y2={{ year2 }}
 run_type="{{ run_type }}"
-tag="{{ tag }}"
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -230,6 +238,15 @@ y_mean = 1.E-9*12*np.array(y.mean())
 yN_mean = 1.E-9*12*np.array(yN.mean())
 yS_mean = 1.E-9*12*np.array(yS.mean())
 
+y_xr = y.assign_attrs(units="kg/month", description="O3 flux")
+yN_xr = yN.assign_attrs(units="kg/month", description="NH O3 flux")
+yS_xr = yS.assign_attrs(units="kg/month", description="SH O3 flux")
+ds1 = y_xr.to_dataset(name='O3_STE')
+ds2 = yN_xr.to_dataset(name='O3_STE_NH')
+ds3 = yS_xr.to_dataset(name='O3_STE_SH')
+ds = xr.merge([ds1, ds2, ds3])
+ds.to_netcdf(pathout+'E3SM_O3_STE_${y1}-${y2}.nc')
+
 # time series plot
 fig = plt.figure(figsize=(10,5))
 plt.plot(time_range_month[1::],y*1.E-9*12)
@@ -295,6 +312,9 @@ fi
 
 # Copy files
 mv *.png ${f}
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
+fi
 
 # Change file permissions
 chmod -R go+rX,go-w ${f}
