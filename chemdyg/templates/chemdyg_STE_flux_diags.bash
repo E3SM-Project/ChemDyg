@@ -234,20 +234,42 @@ else:
      yS_ann[0] = 'nan'
      yS_ann[1:12] = y[0:11]*1.E-9*12
 
+# ----- writing ncfile -----
+y_xr = xr.DataArray(y, coords=[time_range_month[1::]], dims=["time"])
+yN_xr = xr.DataArray(yN, coords=[time_range_month[1::]], dims=["time"])
+yS_xr = xr.DataArray(yS, coords=[time_range_month[1::]], dims=["time"])
+y_xr = y_xr.assign_attrs(units="kg/month", description="O3 flux")
+yN_xr = yN_xr.assign_attrs(units="kg/month", description="NH O3 flux")
+yS_xr = yS_xr.assign_attrs(units="kg/month", description="SH O3 flux")
+ds1 = y_xr.to_dataset(name='y')
+ds2 = yN_xr.to_dataset(name='yN')
+ds3 = yS_xr.to_dataset(name='yS')
+y_ann_xr = xr.DataArray(y_ann, coords=[np.arange(1,13)], dims=["month"])
+y_std_xr = xr.DataArray(y_std, coords=[np.arange(1,13)], dims=["month"])
+y_ann_xr = y_ann_xr.assign_attrs(units="Tg/year", description='O3 flux mean')
+y_std_xr = y_std_xr.assign_attrs(units="Tg/year", description='O3 flux standard deviation')
+yN_ann_xr = xr.DataArray(yN_ann, coords=[np.arange(1,13)], dims=["month"])
+yN_std_xr = xr.DataArray(yN_std, coords=[np.arange(1,13)], dims=["month"])
+yN_ann_xr = yN_ann_xr.assign_attrs(units="Tg/year", description='NH O3 flux mean')
+yN_std_xr = yN_std_xr.assign_attrs(units="Tg/year", description='NH O3 flux standard deviation')
+yS_ann_xr = xr.DataArray(yS_ann, coords=[np.arange(1,13)], dims=["month"])
+yS_std_xr = xr.DataArray(yS_std, coords=[np.arange(1,13)], dims=["month"])
+yS_ann_xr = yS_ann_xr.assign_attrs(units="Tg/year", description='SH O3 flux mean')
+yS_std_xr = yS_std_xr.assign_attrs(units="Tg/year", description='SH O3 flux standard deviation')
+ds4 = y_ann_xr.to_dataset(name='y_ann')
+ds5 = yN_ann_xr.to_dataset(name='yN_ann')
+ds6 = yS_ann_xr.to_dataset(name='yS_ann')
+ds7 = y_ann_xr.to_dataset(name='y_std')
+ds8 = yN_ann_xr.to_dataset(name='yN_std')
+ds9 = yS_ann_xr.to_dataset(name='yS_std')
+ds = xr.merge([ds1, ds2, ds3, ds4, ds5, ds6, ds7, ds8, ds9])
+ds.to_netcdf(pathout+'E3SM_O3_STE_${y1}-${y2}.nc')
+
+# ----- time series plot ----- 
 y_mean = 1.E-9*12*np.array(y.mean())
 yN_mean = 1.E-9*12*np.array(yN.mean())
 yS_mean = 1.E-9*12*np.array(yS.mean())
 
-y_xr = y.assign_attrs(units="kg/month", description="O3 flux")
-yN_xr = yN.assign_attrs(units="kg/month", description="NH O3 flux")
-yS_xr = yS.assign_attrs(units="kg/month", description="SH O3 flux")
-ds1 = y_xr.to_dataset(name='O3_STE')
-ds2 = yN_xr.to_dataset(name='O3_STE_NH')
-ds3 = yS_xr.to_dataset(name='O3_STE_SH')
-ds = xr.merge([ds1, ds2, ds3])
-ds.to_netcdf(pathout+'E3SM_O3_STE_${y1}-${y2}.nc')
-
-# time series plot
 fig = plt.figure(figsize=(10,5))
 plt.plot(time_range_month[1::],y*1.E-9*12)
 plt.plot(time_range_month[1::],yN*1.E-9*12)
@@ -262,7 +284,7 @@ line3 = 'SH mean:'+str(np.round(yS_mean,2))
 plt.legend( [line1,line2,line3])
 pylab.savefig(pathout+'O3_STE_flux.png', dpi=300)
 
-# annual plot
+# ----- annual plot -----
 fig = plt.figure(figsize=(10,5))
 month_txt = np.arange(1,13)
 plt.plot(month_txt,y_ann, linewidth = 1)

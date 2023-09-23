@@ -200,11 +200,6 @@ O3local_US[O3local_US == 0.] = 'nan'
 # ## calculate diurnal cycle
 O3EU_xr = xr.DataArray(O3local_EU, coords=[time_EU,lat_EU,lon_EU], dims=["time","lat","lon"])
 O3US_xr = xr.DataArray(O3local_US, coords=[time_US,lat_US,lon_US], dims=["time","lat","lon"])
-ds1 = O3EU_xr.to_dataset(name='sfcO3_EU')
-ds2 = O3US_xr.to_dataset(name='sfcO3_US')
-ds = xr.merge([ds1, ds2])
-ds.to_netcdf(pathout+'E3SM_sfcO3_${y1}-${y2}.nc')
-
 O3EU_JJA = O3EU_xr.sel(time=O3EU_xr.time.dt.month.isin([6, 7, 8]))
 O3EU_DJF = O3EU_xr.sel(time=O3EU_xr.time.dt.month.isin([12, 1, 2]))
 O3US_JJA = O3US_xr.sel(time=O3US_xr.time.dt.month.isin([6, 7, 8]))
@@ -287,18 +282,43 @@ for i in range(len(O3EU_DJF)):
 
 ndays = int(len(O3EU_JJA)/24)
 n_d = int(ndays*24)
-O3_ENA_JJA_24h = O3_ENA_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
-O3_WNA_JJA_24h = O3_WNA_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
-O3_NEU_JJA_24h = O3_NEU_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
-O3_SEU_JJA_24h = O3_SEU_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_ENA_JJA_24h = 1.e9*O3_ENA_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_WNA_JJA_24h = 1.e9*O3_WNA_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_NEU_JJA_24h = 1.e9*O3_NEU_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_SEU_JJA_24h = 1.e9*O3_SEU_JJA[0:n_d].reshape((ndays,24)).mean(axis=0)
 
 ndays = int(len(O3EU_DJF)/24)
 n_d = int(ndays*24)
-O3_ENA_DJF_24h = O3_ENA_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
-O3_WNA_DJF_24h = O3_WNA_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
-O3_NEU_DJF_24h = O3_NEU_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
-O3_SEU_DJF_24h = O3_SEU_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_ENA_DJF_24h = 1.e9*O3_ENA_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_WNA_DJF_24h = 1.e9*O3_WNA_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_NEU_DJF_24h = 1.e9*O3_NEU_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
+O3_SEU_DJF_24h = 1.e9*O3_SEU_DJF[0:n_d].reshape((ndays,24)).mean(axis=0)
 
+# ----- writing ncfile -----
+O3_ENA_JJA_24h_xr = xr.DataArray(O3_ENA_JJA_24h, name= 'O3_ENA_JJA_24h', coords=[np.arange(0,24)], dims=["hour"], 
+                       attrs=dict(units="ppb", description="JJA O3 abundance in ENA") )
+O3_WNA_JJA_24h_xr = xr.DataArray(O3_WNA_JJA_24h, name= 'O3_WNA_JJA_24h', coords=[np.arange(0,24)], dims=["hour"],  
+		       attrs=dict(units="ppb", description="JJA O3 abundance in WNA") )
+O3_NEU_JJA_24h_xr = xr.DataArray(O3_NEU_JJA_24h, name= 'O3_NEU_JJA_24h', coords=[np.arange(0,24)], dims=["hour"], 
+		       attrs=dict(units="ppb", description="JJA O3 abundance in NEU") )
+O3_SEU_JJA_24h_xr = xr.DataArray(O3_SEU_JJA_24h, name= 'O3_SEU_JJA_24h', coords=[np.arange(0,24)], dims=["hour"], 
+		       attrs=dict(units="ppb", description="JJA O3 abundance in SEU") )
+O3_ENA_DJF_24h_xr = xr.DataArray(O3_ENA_DJF_24h, name= 'O3_ENA_DJF_24h', coords=[np.arange(0,24)], dims=["hour"], 
+		       attrs=dict(units="ppb", description="DJF O3 abundance in ENA") )
+O3_WNA_DJF_24h_xr = xr.DataArray(O3_WNA_DJF_24h, name= 'O3_WNA_DJF_24h', coords=[np.arange(0,24)], dims=["hour"], 
+		       attrs=dict(units="ppb", description="DJF O3 abundance in WNA") )
+O3_NEU_DJF_24h_xr = xr.DataArray(O3_NEU_DJF_24h, name= 'O3_NEU_DJF_24h', coords=[np.arange(0,24)], dims=["hour"], 
+		       attrs=dict(units="ppb", description="DJF O3 abundance in NEU") )
+O3_SEU_DJF_24h_xr = xr.DataArray(O3_SEU_DJF_24h, name= 'O3_SEU_DJF_24h', coords=[np.arange(0,24)], dims=["hour"], 
+                       attrs=dict(units="ppb", description="DJF O3 abundance in SEU") )
+ds1 = O3_ENA_JJA_24h_xr.to_dataset()
+ds2 = O3_WNA_JJA_24h_xr.to_dataset()
+ds3 = O3_NEU_JJA_24h_xr.to_dataset()
+ds4 = O3_SEU_JJA_24h_xr.to_dataset()
+ds5 = O3_ENA_DJF_24h_xr.to_dataset()
+ds6 = O3_WNA_DJF_24h_xr.to_dataset()
+ds7 = O3_NEU_DJF_24h_xr.to_dataset()
+ds8 = O3_SEU_DJF_24h_xr.to_dataset()
 
 # ## read observations
 obs_WNA_JJA = [30.5009, 29.4010, 28.0499, 26.9680, 25.3009, 23.5642, 24.1381, 28.3088, 33.9598, 39.3651,
@@ -422,28 +442,28 @@ fig, (ax0, ax1, ax2, ax3) = plt.subplots(nrows=1, ncols=4, sharex=True,
                                     figsize=(24, 5))
 ax0.plot(obs_WNA_JJA,'ko-')
 ax0.plot(model_WNA_JJA)
-ax0.plot(O3_WNA_JJA_24h*1.e9)
+ax0.plot(O3_WNA_JJA_24h)
 ax0.set_ylim(0,100)
 ax0.set_ylabel('JJA O3 abundance (ppb)',fontsize='x-large')
 ax0.set_xlabel('WNA local time (hr)',fontsize='x-large')
 
 ax1.plot(obs_ENA_JJA,'ko-')
 ax1.plot(model_ENA_JJA)
-ax1.plot(O3_ENA_JJA_24h*1.e9)
+ax1.plot(O3_ENA_JJA_24h)
 ax1.set_ylim(0,100)
 #ax1.set_ylabel('JJA O3 abundance (ppb)',fontsize='x-large')
 ax1.set_xlabel('ENA local time (hr)',fontsize='x-large')
 
 ax2.plot(obs_SEU_JJA,'ko-')
 ax2.plot(model_SEU_JJA)
-ax2.plot(O3_SEU_JJA_24h*1.e9)
+ax2.plot(O3_SEU_JJA_24h)
 ax2.set_ylim(0,100)
 #ax2.set_ylabel('JJA O3 abundance (ppb)',fontsize='x-large')
 ax2.set_xlabel('SEU local time (hr)',fontsize='x-large')
 
 ax3.plot(obs_NEU_JJA,'ko-')
 ax3.plot(model_NEU_JJA)
-ax3.plot(O3_NEU_JJA_24h*1.e9)
+ax3.plot(O3_NEU_JJA_24h)
 ax3.set_ylim(0,100)
 #ax3.set_ylabel('JJA O3 abundance (ppb)',fontsize='x-large')
 ax3.set_xlabel('NEU local time (hr)',fontsize='x-large')
@@ -573,28 +593,28 @@ fig, (ax0, ax1, ax2, ax3) = plt.subplots(nrows=1, ncols=4, sharex=True,
                                     figsize=(24, 5))
 ax0.plot(obs_WNA_DJF,'ko-')
 ax0.plot(model_WNA_DJF)
-ax0.plot(O3_WNA_DJF_24h*1.e9)
+ax0.plot(O3_WNA_DJF_24h)
 ax0.set_ylim(0,100)
 ax0.set_ylabel('DJF O3 abundance (ppb)',fontsize='x-large')
 ax0.set_xlabel('WNA local time (hr)',fontsize='x-large')
 
 ax1.plot(obs_ENA_DJF,'ko-')
 ax1.plot(model_ENA_DJF)
-ax1.plot(O3_ENA_DJF_24h*1.e9)
+ax1.plot(O3_ENA_DJF_24h)
 ax1.set_ylim(0,100)
 #ax1.set_ylabel('DJF O3 abundance (ppb)',fontsize='x-large')
 ax1.set_xlabel('ENA local time (hr)',fontsize='x-large')
 
 ax2.plot(obs_SEU_DJF,'ko-')
 ax2.plot(model_SEU_DJF)
-ax2.plot(O3_SEU_DJF_24h*1.e9)
+ax2.plot(O3_SEU_DJF_24h)
 ax2.set_ylim(0,100)
 #ax2.set_ylabel('DJF O3 abundance (ppb)',fontsize='x-large')
 ax2.set_xlabel('SEU local time (hr)',fontsize='x-large')
 
 ax3.plot(obs_NEU_DJF,'ko-')
 ax3.plot(model_NEU_DJF)
-ax3.plot(O3_NEU_DJF_24h*1.e9)
+ax3.plot(O3_NEU_DJF_24h)
 ax3.set_ylim(0,100)
 #ax3.set_ylabel('DJF O3 abundance (ppb)',fontsize='x-large')
 ax3.set_xlabel('NEU local time (hr)',fontsize='x-large')
@@ -666,10 +686,26 @@ O3_MDA8_WNA_month = np.zeros(12)
 O3_MDA8_SEU_month = np.zeros(12)
 O3_MDA8_NEU_month = np.zeros(12)
 for n in range(12):
-    O3_MDA8_ENA_month[n] = O3_MDA8_ENA_1D.sel(time=O3_MDA8_ENA_1D.time.dt.month.isin([n+1])).mean()
-    O3_MDA8_WNA_month[n] = O3_MDA8_WNA_1D.sel(time=O3_MDA8_WNA_1D.time.dt.month.isin([n+1])).mean()
-    O3_MDA8_NEU_month[n] = O3_MDA8_NEU_1D.sel(time=O3_MDA8_NEU_1D.time.dt.month.isin([n+1])).mean()
-    O3_MDA8_SEU_month[n] = O3_MDA8_SEU_1D.sel(time=O3_MDA8_SEU_1D.time.dt.month.isin([n+1])).mean()
+    O3_MDA8_ENA_month[n] = 1.e9*O3_MDA8_ENA_1D.sel(time=O3_MDA8_ENA_1D.time.dt.month.isin([n+1])).mean()
+    O3_MDA8_WNA_month[n] = 1.e9*O3_MDA8_WNA_1D.sel(time=O3_MDA8_WNA_1D.time.dt.month.isin([n+1])).mean()
+    O3_MDA8_NEU_month[n] = 1.e9*O3_MDA8_NEU_1D.sel(time=O3_MDA8_NEU_1D.time.dt.month.isin([n+1])).mean()
+    O3_MDA8_SEU_month[n] = 1.e9*O3_MDA8_SEU_1D.sel(time=O3_MDA8_SEU_1D.time.dt.month.isin([n+1])).mean()
+
+# ----- writing ncfile -----
+O3_MDA8_ENA_month_xr = xr.DataArray(O3_MDA8_ENA_month, name= 'O3_MDA8_ENA_month',coords=[np.arange(1,13)], dims=["month"], 
+		       attrs=dict(units="ppb", description="Mean MDA8 O3 in ENA") )
+O3_MDA8_WNA_month_xr = xr.DataArray(O3_MDA8_WNA_month, name= 'O3_MDA8_WNA_month',coords=[np.arange(1,13)], dims=["month"], 
+		       attrs=dict(units="ppb", description="Mean MDA8 O3 in WNA") )
+O3_MDA8_NEU_month_xr = xr.DataArray(O3_MDA8_NEU_month, name= 'O3_MDA8_NEU_month',coords=[np.arange(1,13)], dims=["month"], 
+		       attrs=dict(units="ppb", description="Mean MDA8 O3 in NEU") )
+O3_MDA8_SEU_month_xr = xr.DataArray(O3_MDA8_SEU_month, name= 'O3_MDA8_SEU_month',coords=[np.arange(1,13)], dims=["month"], 
+		       attrs=dict(units="ppb", description="Mean MDA8 O3 in SEU") )
+M_ds1 = O3_MDA8_ENA_month_xr.to_dataset()
+M_ds2 = O3_MDA8_WNA_month_xr.to_dataset()
+M_ds3 = O3_MDA8_NEU_month_xr.to_dataset()
+M_ds4 = O3_MDA8_SEU_month_xr.to_dataset()
+ds = xr.merge([ds1, ds2, ds3, ds4, ds5, ds6, ds7, ds8, M_ds1, M_ds2, M_ds3, M_ds4])
+ds.to_netcdf(pathout+'E3SM_surf_O3_${y1}-${y2}.nc')
 
 obs_MDA8_WNA = [31.0984, 36.6661, 43.0965, 48.3994, 49.6384, 49.6071, 50.3713, 49.5312, 44.6972, 36.8627, 31.6061, 29.5710]
 model_MDA8_WNA = [
@@ -737,28 +773,28 @@ fig, (ax0, ax1, ax2, ax3) = plt.subplots(nrows=1, ncols=4, sharex=True,
 monthlist = np.arange(1,13)
 ax0.plot(monthlist,obs_MDA8_WNA,'ko-')
 ax0.plot(monthlist,model_MDA8_WNA)
-ax0.plot(monthlist,O3_MDA8_WNA_month*1.e9)
+ax0.plot(monthlist,O3_MDA8_WNA_month)
 ax0.set_ylim(0,100)
 ax0.set_ylabel('Mean MDA8 O3 (ppb)',fontsize='x-large')
 ax0.set_xlabel('WNA (month)',fontsize='x-large')
 
 ax1.plot(monthlist,obs_MDA8_ENA,'ko-')
 ax1.plot(monthlist,model_MDA8_ENA)
-ax1.plot(monthlist,O3_MDA8_ENA_month*1.e9)
+ax1.plot(monthlist,O3_MDA8_ENA_month)
 ax1.set_ylim(0,100)
 #ax1.set_ylabel('DJF O3 abundance (ppb)',fontsize='x-large')
 ax1.set_xlabel('ENA (month)',fontsize='x-large')
 
 ax2.plot(monthlist,obs_MDA8_SEU,'ko-')
 ax2.plot(monthlist,model_MDA8_SEU)
-ax2.plot(monthlist,O3_MDA8_SEU_month*1.e9)
+ax2.plot(monthlist,O3_MDA8_SEU_month)
 ax2.set_ylim(0,100)
 #ax2.set_ylabel('DJF O3 abundance (ppb)',fontsize='x-large')
 ax2.set_xlabel('SEU (month))',fontsize='x-large')
 
 ax3.plot(monthlist,obs_MDA8_NEU,'ko-')
 ax3.plot(monthlist,model_MDA8_NEU)
-ax3.plot(monthlist,O3_MDA8_NEU_month*1.e9)
+ax3.plot(monthlist,O3_MDA8_NEU_month)
 ax3.set_ylim(0,100)
 #ax3.set_ylabel('DJF O3 abundance (ppb)',fontsize='x-large')
 ax3.set_xlabel('NEU (month)',fontsize='x-large')

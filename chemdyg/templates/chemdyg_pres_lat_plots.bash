@@ -148,10 +148,6 @@ o3_2d = o3.mean(axis=2)
 o3_refer_2d = o3_refer.mean(axis=2)
 o3_new = o3_2d.copy()
 o3_refer_new = o3_refer_2d.copy()
-ds1 = o3_new.to_dataset()
-ds2 = o3_refer_new.to_dataset(name="O3_v2")
-ds = xr.merge([ds1, ds2],compat='override')
-ds.to_netcdf(pathout+'E3SM_O3_PLatcomparison_'+startyear+'-'+endyear+'.nc')
 
 Q = file_in['Q'][0,:,:,:]*28.96/18
 Q_refer = refer_in['Q'][0,:,:,:]*28.96/18
@@ -159,10 +155,6 @@ Q_2d = Q.mean(axis=2)
 Q_refer_2d = Q_refer.mean(axis=2)
 Q_new = Q_2d.copy()
 Q_refer_new = Q_refer_2d.copy()
-ds1 = Q_new.to_dataset()
-ds2 = Q_refer_new.to_dataset(name="Q_v2")
-ds = xr.merge([ds1, ds2],compat='override')
-ds.to_netcdf(pathout+'E3SM_Q_PLatcomparison_'+startyear+'-'+endyear+'.nc')
 
 T = file_in['T'][0,:,:,:]
 T_refer = refer_in['T'][0,:,:,:]
@@ -170,10 +162,6 @@ T_2d = T.mean(axis=2)
 T_refer_2d = T_refer.mean(axis=2)
 T_new = T_2d.copy()
 T_refer_new = T_refer_2d.copy()
-ds1 = T_new.to_dataset()
-ds2 = T_refer_new.to_dataset(name="T_v2")
-ds = xr.merge([ds1, ds2],compat='override')
-ds.to_netcdf(pathout+'E3SM_Temp_PLatcomparison_'+startyear+'-'+endyear+'.nc')
 
 theda = T*(100000/lev)**0.286
 theda_refer = T_refer*(100000/lev)**0.286
@@ -181,10 +169,6 @@ theda_2d = theda.mean(axis=2)
 theda_refer_2d = theda_refer.mean(axis=2)
 theda_new = theda_2d.copy()
 theda_refer_new = theda_refer_2d.copy()
-ds1 = theda_new.to_dataset(name="theda")
-ds2 = theda_refer_new.to_dataset(name="theda_v2")
-ds = xr.merge([ds1, ds2],compat='override')
-ds.to_netcdf(pathout+'E3SM_theda_PLatcomparison_'+startyear+'-'+endyear+'.nc')
 
 for i in range(180):
     f = interpolate.interp1d(lev_2d[:,i], o3_2d[:,i])
@@ -227,7 +211,54 @@ Tdiff_relate = Tdiff/T_refer_new
 thedadiff = theda_new - theda_refer_new
 thedadiff_relate = thedadiff/theda_refer_new
 
-# plotting
+# ----- writing ncffiles -----
+o3_new = o3_new.assign_attrs(units="ppt", description='E3SM O3 concentration')
+o3_new_xr = o3_new.to_dataset(name = 'o3_new')
+o3_refer_new = o3_refer_new.assign_attrs(units="ppt", description='E3SMv2 O3 concentration')
+o3_refer_new_xr = o3_refer_new.to_dataset(name="o3_refer_new")
+diff = diff.assign_attrs(units="ppt", description='O3 concentration differences between E3SM and E3SMv2')
+diff_xr = diff.to_dataset(name = 'diff')
+diff_relate = diff_relate.assign_attrs(description='O3 concentration relative differences between E3SM and E3SMv2')
+diff_relate_xr = diff.to_dataset(name = 'diff_relate')
+theda_new = theda_new.assign_attrs(units="K", description='E3SM potential temperature')
+theda_new_xr = theda_new.to_dataset(name="theda_new")
+theda_refer_new = theda_refer_new.assign_attrs(units="K", description='E3SMv2 potential temperature')
+theda_refer_new_xr = theda_refer_new.to_dataset(name="theda_refer_new")
+thedadiff = thedadiff.assign_attrs(units="K", description='Potential temperature differences between E3SM and E3SMv2')
+thedadiff_xr = thedadiff.to_dataset(name = 'thedadiff')
+thedadiff_relate = thedadiff_relate.assign_attrs(description='Potential temperature relative differences between E3SM and E3SMv2')
+thedadiff_relate_xr = thedadiff_relate.to_dataset(name = 'thedadiff_relate')
+T_new = T_new.assign_attrs(units="K", description='E3SM temperature')
+T_new_xr = T_new.to_dataset(name="T_new")
+T_refer_new = T_refer_new.assign_attrs(units="K", description='E3SMv2 temperature')
+T_refer_new_xr = T_refer_new.to_dataset(name="T_refer_new")
+Tdiff = Tdiff.assign_attrs(units="K", description='Temperature differences between E3SM and E3SMv2')
+Tdiff_xr = Tdiff.to_dataset(name = 'Tdiff')
+Tdiff_relate = Tdiff_relate.assign_attrs(description='Temperature relative differences between E3SM and E3SMv2')
+Tdiff_relate_xr = Tdiff_relate.to_dataset(name = 'Tdiff_relate')
+Q_new = Q_new.assign_attrs(units="ppt", description='E3SM specific humidity')
+Q_new_xr = Q_new.to_dataset(name="Q_new")
+Q_refer_new = Q_refer_new.assign_attrs(units="ppt", description='E3SMv2 specific humidity')
+Q_refer_new_xr = Q_refer_new.to_dataset(name="Q_refer_new")
+Qdiff = Qdiff.assign_attrs(units="ppt", description='Specific humidity differences between E3SM and E3SMv2')
+Qdiff_xr = Qdiff.to_dataset(name = 'Qdiff')
+Qdiff_relate = Qdiff_relate.assign_attrs(description='Specific humidity relative differences between E3SM and E3SMv2')
+Qdiff_relate_xr = Qdiff_relate.to_dataset(name = 'Qdiff_relate')
+tpp = tpp.assign_attrs(units="Pa", description='Tropopause Pressure')
+tpp_xr = tpp.to_dataset(name = 'tpp')
+tpp_3d = tpp_3d.assign_attrs(units="Pa", description='Tropopause Pressure (E90 3D)')
+tpp_3d_xr = tpp_3d.to_dataset(name = 'tpp_3d')
+tpp_refer = tpp_refer.assign_attrs(units="Pa", description='E3SMv2 Tropopause Pressure')
+tpp_refer_xr = tpp_refer.to_dataset(name = 'tpp_refer')
+
+ds = xr.merge([o3_new_xr, o3_refer_new_xr, diff_xr, diff_relate_xr, 
+               theda_new_xr, theda_refer_new_xr, thedadiff_xr, thedadiff_relate_xr,
+               T_new_xr, T_refer_new_xr, Tdiff_xr, Tdiff_relate_xr,
+               Q_new_xr, Q_refer_new_xr, Qdiff_xr, Qdiff_relate_xr, 
+               tpp_xr, tpp_3d_xr, tpp_refer_xr],compat='override')
+ds.to_netcdf(pathout+'E3SM_Pres_Lat_comparison_'+startyear+'-'+endyear+'.nc')
+
+# ----- plotting -----
 
 fig = plt.figure(figsize=(18,12))
 plt.subplot(2, 2, 1)

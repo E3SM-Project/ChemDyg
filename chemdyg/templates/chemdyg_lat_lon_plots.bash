@@ -129,8 +129,11 @@ filename = short_name+'_ANN_'+startyear+'01_'+endyear+'12_climo.nc'
 file_in = xr.open_dataset(path+filename)
 
 TMQ = file_in['TMQ'][0,:,:]
-TMQ.to_netcdf(pathout+'TMQ_'+startyear+'-'+endyear+'.nc')
 
+# ----- writing ncfile -----
+TMQ.to_netcdf(pathout+'E3SM_TMQ_'+startyear+'-'+endyear+'.nc')
+
+# ----- plotting -----
 fig = plt.figure(figsize=(20,10))
 ax = plt.axes(projection=ccrs.PlateCarree(central_longitude=180))
 

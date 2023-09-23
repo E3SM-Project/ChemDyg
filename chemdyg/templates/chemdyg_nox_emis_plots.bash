@@ -144,20 +144,24 @@ for i in range(len(lev)):
     NOx_acf_3d[i,:,:] = NOx_acf[i,:,:] * AREA # Tg N/m2/year ->Tg N/year
     NOx_lgt_3d[i,:,:] = NOx_lgt[i,:,:] * AREA
 
-NOx_acf_xr = NOx_acf_3d.assign_attrs(units="Tg N/year", description="NOx aircraft emission")
-NOx_lgt_xr = NOx_lgt_3d.assign_attrs(units="Tg N/year", description="NOx lightning emission")
-ds1 = NOx_acf_xr.to_dataset()
-ds2 = NOx_lgt_xr.to_dataset()
-ds = xr.merge([ds1, ds2])
-ds.to_netcdf(pathout+'E3SM_NOx_emission_'+startyear+'-'+endyear+'.nc')
-
 NOx_acf_1d = NOx_acf_3d.sum(axis=1).sum(axis=1)
 NOx_acf_2d = NOx_acf_3d.sum(axis=0)
 NOx_lgt_1d = NOx_lgt_3d.sum(axis=1).sum(axis=1)
 NOx_lgt_2d = NOx_lgt_3d.sum(axis=0)
 
-# plotting
+# ----- writing ncfile -----
+NOx_acf_1d = NOx_acf_1d.assign_attrs(units="Tg N/year", description="NOx aircraft emission")
+NOx_acf_2d = NOx_acf_2d.assign_attrs(units="Tg N/year", description="NOx aircraft emission")
+NOx_lgt_1d = NOx_lgt_1d.assign_attrs(units="Tg N/year", description="NOx lightning emission")
+NOx_lgt_2d = NOx_lgt_2d.assign_attrs(units="Tg N/year", description="NOx lightning emission")
+ds1 = NOx_acf_1d.to_dataset(name='NOx_acf_1d')
+ds2 = NOx_acf_2d.to_dataset(name='NOx_acf_2d')
+ds3 = NOx_lgt_1d.to_dataset(name='NOx_lgt_1d')
+ds4 = NOx_lgt_2d.to_dataset(name='NOx_lgt_2d')
+ds = xr.merge([ds1, ds2, ds3, ds4])
+ds.to_netcdf(pathout+'E3SM_NOx_emission_'+startyear+'-'+endyear+'.nc')
 
+# ----- plotting -----
 fig = plt.figure(figsize=(18,12))
 ax1 = fig.add_subplot(221)
 plt.plot(NOx_lgt_1d,lev) #levels=np.arange(0, 1000, 20),

@@ -164,10 +164,33 @@ for i in range(startindex,endindex):
     TOZ_index = result[0].min()
     O3_64S[ii] = (TOZ_sort[0:TOZ_index-1]*AREA_sort[0:TOZ_index-1]).mean()/(AREA_sort[0:TOZ_index-1].mean())
 
-O3_64S_xr = xr.DataArray(O3_64S, name = 'TOZ_64S',coords=[time_range[startindex:endindex]], dims=["time"])
-O3_64S_xr = O3_64S_xr.assign_attrs(units="DU", description='Total column ozone conc. with equivalent latitude (64S)')
-O3_64S_xr.to_netcdf(pathout+'E3SM_TOZ_64S_${y1}-${y2}.nc')
+O3_array = O3_64S.reshape((years,365))
+O3_mean = O3_array.mean(axis=0)
+O3_std = O3_array.std(axis=0)
+TOZ_array = TOZ_min[startindex:endindex].values.reshape((years,365))
+TOZ_mean = TOZ_array.mean(axis=0)
+TOZ_std = TOZ_array.std(axis=0)
 
+# ----- writing ncfile -----
+O3_64S_xr = xr.DataArray(O3_64S, name = 'TOZ_64S',coords=[time_range[startindex:endindex]], dims=["time"],
+                 attrs=dict(units="DU", description='Total column ozone conc. with equivalent latitude (64S)'))
+TOZ_mean_xr = xr.DataArray(TOZ_mean, name = 'TOZ_mean', coords=[time_range[0:365]], dims=["day"], 
+                 attrs=dict(units="DU", description='Climatological mean of daily SH minimum E3SM total column ozone'))
+TOZ_std_xr = xr.DataArray(TOZ_std, name = 'TOZ_std', coords=[time_range[0:365]], dims=["day"],
+                 attrs=dict(units="DU", description='Standard deviation of daily SH minimum E3SM total column ozone'))
+O3_mean_xr = xr.DataArray(O3_mean, name = 'O3_mean', coords=[time_range[0:365]], dims=["day"], 
+                 attrs=dict(units="DU", description='Mean of total column ozone conc. with equivalent latitude (64S)'))
+O3_std_xr = xr.DataArray(O3_std, name = 'O3_std', coords=[time_range[0:365]], dims=["day"],
+                 attrs=dict(units="DU", description='Standard deviation of total column ozone conc. with equivalent latitude (64S)'))
+ds1 = TOZ_mean_xr.to_dataset()
+ds2 = TOZ_std_xr.to_dataset()
+ds3 = O3_mean_xr.to_dataset()
+ds4 = O3_std_xr.to_dataset()
+ds5 = O3_64S_xr.to_dataset()
+ds = xr.merge([ds1, ds2, ds3, ds4,ds5])
+ds.to_netcdf(pathout+'E3SM_TOZ_64S_${y1}-${y2}.nc')
+
+# ----- plotting -----
 fig = plt.figure(figsize=(10,5))
 plt.plot(time_range[startindex:endindex],O3_64S)
 plt.title('Total column ozone conc. with equivalent latitude (64S)')
@@ -176,16 +199,9 @@ plt.ylabel('O3 conc. (DU)',fontsize='large')
 pylab.savefig(pathout+'TOZ_PDF_timeseries.png', dpi=300)
 
 #-------- climo plot ---------------
-O3_array = O3_64S.reshape((years,365))
-O3_mean = O3_array.mean(axis=0)
-O3_std = O3_array.std(axis=0)
-TOZ_array = TOZ_min[startindex:endindex].values.reshape((years,365))
-TOZ_mean = TOZ_array.mean(axis=0)
-TOZ_std = TOZ_array.std(axis=0)
-
 npdate = np.array(time_range[0:365])
 fig, ax = plt.subplots(figsize=(10, 5))
-plt.plot(npdate,TOZ_mean, label ='E3SMv2')
+plt.plot(npdate,TOZ_mean, label ='E3SM')
 plt.fill_between(npdate,TOZ_mean+TOZ_std,TOZ_mean-TOZ_std, alpha=.5, linewidth=0)
 plt.plot(npdate,O3_mean, label ='TOZ(64S)')
 plt.fill_between(npdate,O3_mean+O3_std,O3_mean-O3_std, alpha=.5, linewidth=0)

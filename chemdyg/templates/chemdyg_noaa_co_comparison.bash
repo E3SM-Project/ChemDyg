@@ -194,10 +194,8 @@ for n in range(len(Sta)):
     mask_noaa = ~np.isnan(CO_noaa)
     slope_noaa, intercept, r_value, p_value, std_err = linregress(nmonth_noaa[mask_noaa], CO_noaa[mask_noaa])
     lin_noaa = nmonth_noaa*slope_noaa+intercept
-    lin_noaa_xa = xr.DataArray(lin_noaa, coords=[time_range_noaa], dims=["time"])
-    diff_noaa = CO_noaa - lin_noaa_xa
-    CO_sel_1D_xr = xr.DataArray(CO_sel_1D, name='CO', coords=[time_range_noaa], dims=["time"])
-    CO_sel_1D_xr.to_netcdf(pathout+'E3SM_CO_'+startyear+'-'+endyear+'.nc')
+    lin_noaa_xr = xr.DataArray(lin_noaa, coords=[time_range_noaa], dims=["time"])
+    diff_noaa = CO_noaa - lin_noaa_xr
 
     nmonth = np.arange(0,len(CO_sel_1D),1)
     mask = ~np.isnan(CO_sel_1D)
@@ -205,15 +203,32 @@ for n in range(len(Sta)):
     if (len(nmonth[mask]) != 0):
         slope_e3sm, intercept, r_value, p_value, std_err = linregress(nmonth[mask], CO_sel_1D[mask])
         lin_e3sm = nmonth*slope_e3sm+intercept
-        lin_e3sm_xa = xr.DataArray(lin_e3sm, coords=[time_range_noaa], dims=["time"])
-        diff = CO_sel_1D - lin_e3sm_xa
+        lin_e3sm_xr = xr.DataArray(lin_e3sm, coords=[time_range_noaa], dims=["time"])
+        diff = CO_sel_1D - lin_e3sm_xr
 
-        # plotting
+        # ----- writing ncfile -----
+        CO_sel_1D_xr = xr.DataArray(CO_sel_1D, name='CO_sel_1D', coords=[CO_noaa['time']], dims=["time"])
+        CO_sel_1D_xr = CO_sel_1D_xr.assign_attrs(units="ppb", description='E3SM surface CO')
+        diff_xr = xr.DataArray(diff, name='diff', coords=[CO_noaa['time']], dims=["time"])
+        diff_xr = diff_xr.assign_attrs(units="ppb", description='E3SM surface CO anomaly')
+        lin_e3sm_xr = lin_e3sm_xr.assign_attrs(units="ppb", description='Trend E3SM surface CO')
+        lin_noaa_xr = lin_noaa_xr.assign_attrs(units="ppb", description='Trend NOAA surface CO')
+        diff_noaa = diff_noaa.assign_attrs(units="ppb", description='NOAA surface CO anomaly')
+        ds1 = CO_sel_1D_xr.to_dataset()
+        ds2 = CO_noaa.to_dataset(name='CO_noaa')
+        ds3 = lin_e3sm_xr.to_dataset(name='lin_e3sm_xr')
+        ds4 = lin_noaa_xr.to_dataset(name='lin_noaa_xr')
+        ds5 = diff_xr.to_dataset()
+        ds6 = diff_noaa.to_dataset(name='diff_noaa')
+        ds = xr.merge([ds1,ds2,ds3,ds4,ds5,ds6])
+        ds.to_netcdf(pathout+'E3SM_CO_'+Sta[n]+'_'+startyear+'-'+endyear+'.nc')
+        
+        # ----- plotting -----
         fig, (ax1,ax2) = plt.subplots(2, 1,figsize=(10, 5))
         ax1.plot(CO_noaa['time'],CO_sel_1D,'k')
-        ax1.plot(CO_noaa['time'][mask],lin_e3sm_xa[mask],'k--')
+        ax1.plot(CO_noaa['time'][mask],lin_e3sm_xr[mask],'k--')
         ax1.plot(CO_noaa['time'],CO_noaa,'r')
-        ax1.plot(CO_noaa['time'][mask_noaa],lin_noaa_xa[mask_noaa],'r--')
+        ax1.plot(CO_noaa['time'][mask_noaa],lin_noaa_xr[mask_noaa],'r--')
         ax1.set_title('Surface CO at '+Sta[n]+' (Lat '+str(lat_noaa[0].values)+', Lon '+str(lon_noaa[0].values)+')')
         line1 = 'E3SM mean:'+str(np.round(CO_sel_1D[mask].mean(),2))
         line2 = 'E3SM trend:'+str(np.round(slope_e3sm*12,2))+' ppb/yr'
@@ -228,10 +243,19 @@ for n in range(len(Sta)):
         ax2.set_ylabel('Anomalies')
         pylab.savefig(pathout+'NOAA_CO_'+Sta[n]+'.png', dpi=600)
     else:
-        # plotting
+        # ----- writing ncfile -----
+        lin_noaa_xr = lin_noaa_xr.assign_attrs(units="ppb", description='Trend NOAA surface CO')
+        diff_noaa = diff_noaa.assign_attrs(units="ppb", description='NOAA surface CO anomaly')
+        ds1 = CO_noaa.to_dataset(name='CO_noaa')
+        ds2 = lin_noaa_xr.to_dataset(name='lin_noaa_xr')
+        ds3 = diff_noaa.to_dataset(name='diff_noaa')
+        ds = xr.merge([ds1,ds2,ds3])
+        ds.to_netcdf(pathout+'E3SM_CO_'+Sta[n]+'_'+startyear+'-'+endyear+'.nc')
+
+        # ----- plotting ------
         fig, (ax1,ax2) = plt.subplots(2, 1,figsize=(10, 5))
         ax1.plot(CO_noaa['time'],CO_noaa,'r')
-        ax1.plot(CO_noaa['time'][mask_noaa],lin_noaa_xa[mask_noaa],'r--')
+        ax1.plot(CO_noaa['time'][mask_noaa],lin_noaa_xr[mask_noaa],'r--')
         ax1.set_title('Surface CO at '+Sta[n]+' (Lat '+str(lat_noaa[0].values)+', Lon '+str(lon_noaa[0].values)+')')
         line3 = 'NOAA mean:'+str(np.round(CO_noaa[mask_noaa].mean().values,2))
         line4 = 'NOAA trend:'+str(np.round(slope_noaa*12,2))+' ppb/yr'
