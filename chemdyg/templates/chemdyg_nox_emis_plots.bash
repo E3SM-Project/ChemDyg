@@ -37,7 +37,15 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -141,8 +149,19 @@ NOx_acf_2d = NOx_acf_3d.sum(axis=0)
 NOx_lgt_1d = NOx_lgt_3d.sum(axis=1).sum(axis=1)
 NOx_lgt_2d = NOx_lgt_3d.sum(axis=0)
 
-# plotting
+# ----- writing ncfile -----
+NOx_acf_1d = NOx_acf_1d.assign_attrs(units="Tg N/year", description="NOx aircraft emission")
+NOx_acf_2d = NOx_acf_2d.assign_attrs(units="Tg N/year", description="NOx aircraft emission")
+NOx_lgt_1d = NOx_lgt_1d.assign_attrs(units="Tg N/year", description="NOx lightning emission")
+NOx_lgt_2d = NOx_lgt_2d.assign_attrs(units="Tg N/year", description="NOx lightning emission")
+ds1 = NOx_acf_1d.to_dataset(name='NOx_acf_1d')
+ds2 = NOx_acf_2d.to_dataset(name='NOx_acf_2d')
+ds3 = NOx_lgt_1d.to_dataset(name='NOx_lgt_1d')
+ds4 = NOx_lgt_2d.to_dataset(name='NOx_lgt_2d')
+ds = xr.merge([ds1, ds2, ds3, ds4])
+ds.to_netcdf(pathout+'E3SM_NOx_emission_'+startyear+'-'+endyear+'.nc')
 
+# ----- plotting -----
 fig = plt.figure(figsize=(18,12))
 ax1 = fig.add_subplot(221)
 plt.plot(NOx_lgt_1d,lev) #levels=np.arange(0, 1000, 20),
@@ -216,6 +235,9 @@ fi
 
 # Copy files
 mv *.png ${f}
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
+fi
 
 # Change file permissions
 chmod -R go+rX,go-w ${f}

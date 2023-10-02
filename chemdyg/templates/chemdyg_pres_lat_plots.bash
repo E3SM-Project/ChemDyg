@@ -37,10 +37,17 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
 # diagnostics_base_path is set by zppy using the mache package
 referDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
-results_dir=${tag}_${Y1}-${Y2}
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -204,7 +211,54 @@ Tdiff_relate = Tdiff/T_refer_new
 thedadiff = theda_new - theda_refer_new
 thedadiff_relate = thedadiff/theda_refer_new
 
-# plotting
+# ----- writing ncffiles -----
+o3_new = o3_new.assign_attrs(units="ppt", description='E3SM O3 concentration')
+o3_new_xr = o3_new.to_dataset(name = 'o3_new')
+o3_refer_new = o3_refer_new.assign_attrs(units="ppt", description='E3SMv2 O3 concentration')
+o3_refer_new_xr = o3_refer_new.to_dataset(name="o3_refer_new")
+diff = diff.assign_attrs(units="ppt", description='O3 concentration differences between E3SM and E3SMv2')
+diff_xr = diff.to_dataset(name = 'diff')
+diff_relate = diff_relate.assign_attrs(description='O3 concentration relative differences between E3SM and E3SMv2')
+diff_relate_xr = diff.to_dataset(name = 'diff_relate')
+theda_new = theda_new.assign_attrs(units="K", description='E3SM potential temperature')
+theda_new_xr = theda_new.to_dataset(name="theda_new")
+theda_refer_new = theda_refer_new.assign_attrs(units="K", description='E3SMv2 potential temperature')
+theda_refer_new_xr = theda_refer_new.to_dataset(name="theda_refer_new")
+thedadiff = thedadiff.assign_attrs(units="K", description='Potential temperature differences between E3SM and E3SMv2')
+thedadiff_xr = thedadiff.to_dataset(name = 'thedadiff')
+thedadiff_relate = thedadiff_relate.assign_attrs(description='Potential temperature relative differences between E3SM and E3SMv2')
+thedadiff_relate_xr = thedadiff_relate.to_dataset(name = 'thedadiff_relate')
+T_new = T_new.assign_attrs(units="K", description='E3SM temperature')
+T_new_xr = T_new.to_dataset(name="T_new")
+T_refer_new = T_refer_new.assign_attrs(units="K", description='E3SMv2 temperature')
+T_refer_new_xr = T_refer_new.to_dataset(name="T_refer_new")
+Tdiff = Tdiff.assign_attrs(units="K", description='Temperature differences between E3SM and E3SMv2')
+Tdiff_xr = Tdiff.to_dataset(name = 'Tdiff')
+Tdiff_relate = Tdiff_relate.assign_attrs(description='Temperature relative differences between E3SM and E3SMv2')
+Tdiff_relate_xr = Tdiff_relate.to_dataset(name = 'Tdiff_relate')
+Q_new = Q_new.assign_attrs(units="ppt", description='E3SM specific humidity')
+Q_new_xr = Q_new.to_dataset(name="Q_new")
+Q_refer_new = Q_refer_new.assign_attrs(units="ppt", description='E3SMv2 specific humidity')
+Q_refer_new_xr = Q_refer_new.to_dataset(name="Q_refer_new")
+Qdiff = Qdiff.assign_attrs(units="ppt", description='Specific humidity differences between E3SM and E3SMv2')
+Qdiff_xr = Qdiff.to_dataset(name = 'Qdiff')
+Qdiff_relate = Qdiff_relate.assign_attrs(description='Specific humidity relative differences between E3SM and E3SMv2')
+Qdiff_relate_xr = Qdiff_relate.to_dataset(name = 'Qdiff_relate')
+tpp = tpp.assign_attrs(units="Pa", description='Tropopause Pressure')
+tpp_xr = tpp.to_dataset(name = 'tpp')
+tpp_3d = tpp_3d.assign_attrs(units="Pa", description='Tropopause Pressure (E90 3D)')
+tpp_3d_xr = tpp_3d.to_dataset(name = 'tpp_3d')
+tpp_refer = tpp_refer.assign_attrs(units="Pa", description='E3SMv2 Tropopause Pressure')
+tpp_refer_xr = tpp_refer.to_dataset(name = 'tpp_refer')
+
+ds = xr.merge([o3_new_xr, o3_refer_new_xr, diff_xr, diff_relate_xr, 
+               theda_new_xr, theda_refer_new_xr, thedadiff_xr, thedadiff_relate_xr,
+               T_new_xr, T_refer_new_xr, Tdiff_xr, Tdiff_relate_xr,
+               Q_new_xr, Q_refer_new_xr, Qdiff_xr, Qdiff_relate_xr, 
+               tpp_xr, tpp_3d_xr, tpp_refer_xr],compat='override')
+ds.to_netcdf(pathout+'E3SM_Pres_Lat_comparison_'+startyear+'-'+endyear+'.nc')
+
+# ----- plotting -----
 
 fig = plt.figure(figsize=(18,12))
 plt.subplot(2, 2, 1)
@@ -470,6 +524,9 @@ fi
 
 # Copy files
 mv *.png ${f}
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
+fi
 
 # Change file permissions
 chmod -R go+rX,go-w ${f}

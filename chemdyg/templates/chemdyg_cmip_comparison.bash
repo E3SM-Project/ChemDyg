@@ -37,10 +37,17 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
+ncfile_save="{{ ncfile_save }}"
 # diagnostics_base_path is set by zppy using the mache package
 cmipDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
-results_dir=${tag}_${Y1}-${Y2}
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -182,6 +189,35 @@ UKESM_std = UKESM_TCO.groupby('time.year').std('time')
 E3SM_ANN = E3SM_xr.groupby('time.year').mean('time')
 E3SM_std = E3SM_xr.groupby('time.year').std('time')
 
+# ----- writing ncfile -----
+CESM_ANN = CESM_ANN.assign_attrs(units="Tg", description='CESM Tropospheric-ozone burden (TCO) mean')
+CESM_std = CESM_std.assign_attrs(units="Tg", description='CESM Tropospheric-ozone burden (TCO) std')
+CESM_ANN_xr = CESM_ANN.to_dataset(name='CESM_ANN')
+CESM_std_xr = CESM_std.to_dataset(name='CESM_std')
+GFDL_ANN = GFDL_ANN.assign_attrs(units="Tg", description='GFDL Tropospheric-ozone burden (TCO) mean')
+GFDL_std = GFDL_std.assign_attrs(units="Tg", description='GFDL Tropospheric-ozone burden (TCO) std')
+GFDL_ANN_xr = GFDL_ANN.to_dataset(name='GFDL_ANN')
+GFDL_std_xr = GFDL_std.to_dataset(name='GFDL_std')
+GISS_ANN = GISS_ANN.assign_attrs(units="Tg", description='GISS Tropospheric-ozone burden (TCO) mean')
+GISS_std = GISS_std.assign_attrs(units="Tg", description='GISS Tropospheric-ozone burden (TCO) std')
+GISS_ANN_xr = GISS_ANN.to_dataset(name='GISS_ANN')
+GISS_std_xr = GISS_std.to_dataset(name='GISS_std')
+MRI_ANN = MRI_ANN.assign_attrs(units="Tg", description='MRI Tropospheric-ozone burden (TCO) mean')
+MRI_std = MRI_std.assign_attrs(units="Tg", description='MRI Tropospheric-ozone burden (TCO) std')
+MRI_ANN_xr = MRI_ANN.to_dataset(name='MRI_ANN')
+MRI_std_xr = MRI_std.to_dataset(name='MRI_std')
+UKESM_ANN = UKESM_ANN.assign_attrs(units="Tg", description='UKESM Tropospheric-ozone burden (TCO) mean')
+UKESM_std = UKESM_std.assign_attrs(units="Tg", description='UKESM Tropospheric-ozone burden (TCO) std')
+UKESM_ANN_xr = UKESM_ANN.to_dataset(name='UKESM_ANN')
+UKESM_std_xr = UKESM_std.to_dataset(name='UKESM_std')
+E3SM_ANN = E3SM_ANN.assign_attrs(units="Tg", description='E3SM Tropospheric-ozone burden (TCO) mean')
+E3SM_std = E3SM_std.assign_attrs(units="Tg", description='E3SM Tropospheric-ozone burden (TCO) std')
+E3SM_ANN_xr = E3SM_ANN.to_dataset(name='E3SM_ANN')
+E3SM_std_xr = E3SM_std.to_dataset(name='E3SM_std')
+ds = xr.merge([CESM_ANN_xr, CESM_std_xr,GFDL_ANN_xr, GFDL_std_xr,GISS_ANN_xr, GISS_std_xr,
+               MRI_ANN_xr, MRI_std_xr, UKESM_ANN_xr, UKESM_std_xr, E3SM_ANN_xr, E3SM_std_xr])
+ds.to_netcdf(pathout+'E3SM_cmip_'+startyear+'-'+endyear+'.nc')
+
 #----- plotting -----
 fig = plt.figure(figsize=(10,5))
 plt.plot(time_range_year,CESM_ANN, label='CESM', linewidth = 1)
@@ -233,6 +269,9 @@ fi
 
 # Copy files
 mv *.png ${f}
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
+fi
 
 # Change file permissions
 chmod -R go+rX,go-w ${f}

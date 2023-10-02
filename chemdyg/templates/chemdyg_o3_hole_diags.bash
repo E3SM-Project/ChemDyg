@@ -38,10 +38,17 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
 # diagnostics_base_path is set by zppy using the mache package
 obsDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
-results_dir=${tag}_${Y1}-${Y2}
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -49,15 +56,11 @@ cd ${workdir}
 
 # Create local links to input climo files
 tsDir={{ output }}/post/atm/{{ grid }}/ts/monthly/{{ '%dyr' % (ypf) }}
-#tsDir={{ output }}/post/atm/{{ grid }}
 mkdir -p ts
 mkdir -p figs
 mkdir -p data
 ln -s ${obsDir}/O3_hole/*_obs.nc ./ts
-#cd ts
-#ln -s ${tsDir}/TCO*.nc ./ts
-#ln -s ${cmipDir}/*TCO.nc ./ts
-#cd ..
+
 # Create symbolic links to input files
 input={{ input }}/{{ input_subdir }}
 eamfile={{ input_files }}
@@ -167,16 +170,36 @@ for i in range(startindex,endindex):
 O3_area_time = O3_area[startindex:endindex].sel(time=O3_area[startindex:endindex].time.dt.month.isin([7, 8, 9, 10, 11, 12]))
 TOZ_min_time = TOZ_min[startindex:endindex].sel(time=TOZ_min[startindex:endindex].time.dt.month.isin([7, 8, 9, 10, 11, 12]))
 
-#-------- climo plot ---------------
 O3_array = O3_area_time.values.reshape((years,184))
-#O3_array[O3_array==0] = 'nan'
 O3_mean = O3_array.mean(axis=0) *1.e-12
 O3_std = O3_array.std(axis=0) *1.e-12
 TOZ_array = TOZ_min_time.values.reshape((years,184))
 TOZ_mean = TOZ_array.mean(axis=0)
 TOZ_std = TOZ_array.std(axis=0)
 
-npdate = np.array(time_range[181:365])
+# ----- writiing ncfile -----
+oz_avg_xr = oz_avg.to_dataset(name='oz_avg')
+oz_std_xr = oz_std.to_dataset(name='oz_std')
+area_avg_xr = area_avg.to_dataset(name='area_avg')
+area_std_xr = area_std.to_dataset(name='area_std')
+TOZ_mean_xr = xr.DataArray(TOZ_mean, coords=[oz_avg['time']], dims=["time"])
+TOZ_mean_xr = TOZ_mean_xr.assign_attrs(units="DU", description='Climatological mean of daily SH minimum E3SM total column ozone')
+TOZ_std_xr = xr.DataArray(TOZ_std, coords=[oz_avg['time']], dims=["time"])
+TOZ_std_xr = TOZ_std_xr.assign_attrs(units="DU", description='Standard deviation of daily SH minimum E3SM total column ozone')
+TOZ_mean_xr = TOZ_mean_xr.to_dataset(name='TOZ_mean')
+TOZ_std_xr = TOZ_std_xr.to_dataset(name='TOZ_std')
+O3_mean_xr = xr.DataArray(O3_mean, coords=[oz_avg['time']], dims=["time"])
+O3_mean_xr = O3_mean_xr.assign_attrs(units="million of km2", description='Climatological mean of daily mean E3SM O3 hole area')
+O3_std_xr = xr.DataArray(O3_std, coords=[oz_avg['time']], dims=["time"])
+O3_std_xr = O3_std_xr.assign_attrs(units="million of km2", description='Standard deviation of daily mean O3 hole area')
+O3_mean_xr = O3_mean_xr.to_dataset(name='O3_mean')
+O3_std_xr = O3_std_xr.to_dataset(name='O3_std')
+ds = xr.merge([oz_avg_xr, oz_std_xr, TOZ_mean_xr, TOZ_std_xr, 
+               area_avg_xr, area_std_xr, O3_mean_xr, O3_std_xr]) 
+ds.to_netcdf(pathout+'E3SM_O3_hole_${y1}-${y2}.nc')
+
+#-------- climo plot ---------------
+npdate = np.array(time_range[182:366])
 fig, ax = plt.subplots(figsize=(10, 5))
 plt.plot(npdate,oz_avg, label ='Obs.')
 plt.fill_between(npdate,oz_avg+oz_std,oz_avg-oz_std, alpha=.5, linewidth=0)
@@ -224,6 +247,9 @@ f=${www}/${case}/e3sm_chem_diags_${Y1}_${Y2}/plots/
 mkdir -p ${f}
 if [ -d "${f}" ]; then
    mv ./*.png ${f}
+fi
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
 fi
 
 # Change file permissions

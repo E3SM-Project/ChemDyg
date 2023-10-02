@@ -37,8 +37,15 @@ y2={{ year2 }}
 Y1="{{ '%04d' % (year1) }}"
 Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
-tag="{{ tag }}"
-results_dir=${tag}_${Y1}-${Y2}
+ncfile_save="{{ ncfile_save }}"
+if [[ "${ncfile_save}" == "true" ]]; then
+   results_dir={{ output }}/post/atm/ncfiles
+   if [[ -d ${results_dir} ]]; then
+      echo "directory exists."
+   else
+      mkdir -p ${results_dir}
+   fi
+fi
 
 # Create temporary workdir
 workdir=`mktemp -d tmp.${id}.XXXX`
@@ -198,13 +205,25 @@ for i in range(0,20,2):
     temp_lat_l[ii] = temp_l.mean()
 
 latlist = np.arange(60,80,2)
+temp_lat_h_xr = xr.DataArray(temp_lat_h, name = 'temp_lat_h',coords=[latlist], dims=["lat"], 
+                   attrs=dict(units='K', description='Mean temp.(Jul. to Dec.) with equivalent latitude at 25km height'))
+temp_lat_m_xr = xr.DataArray(temp_lat_m, name = 'temp_lat_m',coords=[latlist], dims=["lat"],
+                   attrs=dict(units='K', description='Mean temp.(Jul. to Dec.) with equivalent latitude at 20km height'))
+temp_lat_l_xr = xr.DataArray(temp_lat_l, name = 'temp_lat_l',coords=[latlist], dims=["lat"],
+                   attrs=dict(units='K', description='Mean temp.(Jul. to Dec.) with equivalent latitude at 14km height'))
+ds1 = temp_lat_h_xr.to_dataset()
+ds2 = temp_lat_m_xr.to_dataset()
+ds3 = temp_lat_l_xr.to_dataset()
+ds = xr.merge([ds1, ds2, ds3])
+ds.to_netcdf(pathout+'E3SM_temp_equi_lat_${y1}-${y2}.nc')
+
 fig = plt.figure(figsize=(10,5))
 plt.plot(latlist,temp_lat_h)
 plt.plot(latlist,temp_lat_m)
 plt.plot(latlist,temp_lat_l)
 plt.title('Mean temp.(Jul. to Dec.) with equivalent latitude ${Y1}~${Y2}')
 plt.xlabel('Lat')
-plt.ylabel('Temperature (k)',fontsize='large')
+plt.ylabel('Temperature (K)',fontsize='large')
 plt.legend( ['14 km alt.','20 km alt.','25 km alt.'])
 pylab.savefig(pathout+'temp_PDF_climo.png', dpi=300)
 
@@ -229,6 +248,9 @@ f=${www}/${case}/e3sm_chem_diags_${Y1}_${Y2}/plots/
 mkdir -p ${f}
 if [ -d "${f}" ]; then
    mv ./*.png ${f}
+fi
+if [[ "${ncfile_save}" == "true" ]]; then
+   mv *.nc ${results_dir}
 fi
 
 # Change file permissions
