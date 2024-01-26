@@ -13,6 +13,8 @@ zppy -c ChemDyg_example_script.cfg
 ```
 **Note that the users need to change the'e3sm_unified' path on different zppy-supported machines (https://e3sm-project.github.io/zppy/_build/html/main/getting_started.html#activate-e3sm-unified-environment). 
 
+For people who cannot access zppy-supported machines, the observational data used in ChemDyg are available at https://doi.org/10.5281/zenodo.8274422. 
+
 ## License
 
 Copyright (c) 2023, Energy Exascale Earth System Model Project
