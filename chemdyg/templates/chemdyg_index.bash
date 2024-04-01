@@ -134,7 +134,7 @@ index = index + '<pre> <a href="to3areas_O3hole.png">areas</a>  <a href="to3mins
 index = index + '<h> Ozone hole with equivalent latitude </h>'
 index = index + '<pre> <a href="TOZ_PDF_timeseries.png">time_series</a>  <a href="TOZ_PDF_climo.png">climate</a> </pre>'
 index = index + '<h> Ozone STE flux </h>'
-index = index + '<pre> <a href="O3_STE_flux.png">time series</a> <a href="O3_STE_flux_monthly.png">monthly</a> </pre>'
+index = index + '<pre> <a href="O3_STE_flux.png">time series</a> <a href="O3_STE_flux_monthly.png">monthly</a> <a href="STE_lat_lon_12month.png">lat-lon plot</a> </pre>'
 index = index + '<h> QBO diagnostics </h>'
 index = index + '<pre> <a href="QBO_fig1.png">lat-time TCO</a> <a href="QBO_fig2.png">vertical cross-section of O3</a> <a href="QBO_fig3.png">steady-state ozone mixing ratio</a> </pre>'
 index = index + '<h> Temperature with equivalent latitude </h>'
