@@ -119,7 +119,7 @@ def qbo_avg(input1,angle_ind,lat1,lat2,index,index2):
     for j in range(len(phase)-1):
         ##
         if ((phase[j]-14 < 0) or \
-            (phase[j]+14 > dims[0])):
+            (phase[j]+14+1 > dims[0])):
                         continue
         ##
         aa_280_med=input2[phase[j]-14:phase[j]+14+1,:,:].sel(lat=slice(lat1,lat2))
@@ -164,7 +164,7 @@ def qbo_avg_srf(input1,angle_ind,index,index2):
         #print(str(phase[j]-14)+" "+str((phase[j]+14)))
         ##
         if ((phase[j]-14 < 0) or \
-            (phase[j]+14 > dims[0])):
+            (phase[j]+14+1 > dims[0])):
                         continue
         aa_280_med=input2[phase[j]-14:phase[j]+14+1,:]
         aa_tim_med[j,:,:]=aa_280_med
