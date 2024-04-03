@@ -115,7 +115,7 @@ endyear = '${y2}'
 filename = short_name+'.eam.h0.*.nc'
 filenameh1 = short_name+'.${eamfile}.*.nc'
 
-varname = ["O3","CO","CH4","NO"]
+varname = ["O3","CO","CH4LNZ","NO"]
 layer = ['']
 
 h0_in = xr.open_mfdataset(path+filename)
@@ -258,7 +258,7 @@ for var in range(len(varname)):
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(CEL_total)*unit_covet)+'</pre>'
             line_ann = line_ann + '<pre> '+ format('CO net change (Tg/yr)','28s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(NET2)*unit_covet)+'</pre>'
-        elif varname[var] == 'CH4':
+        elif varname[var] == 'CH4LNZ':
             if varname[var]+'_2DTDS' in variablelist:
                 print(varname[var])
             else:
@@ -281,11 +281,11 @@ for var in range(len(varname)):
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDS_total)*unit_covet)+'</pre>'
             line_ann = line_ann + '<pre> '+ format('CH4 deposition (Tg/yr)','28s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDD_total)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CO production (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CH4 production (Tg/yr)','28s')
             line_ann = line_ann + '      --------     '+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CO loss (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CH4 loss (Tg/yr)','28s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(CEL_total)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CO net change (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CH4 net change (Tg/yr)','28s')
             line_ann = line_ann + '      --------     '+'</pre>'
         elif varname[var] == 'NO':
             MSD = h1_in[varname[var]+'_2DMSD'] + h1_in[varname[var]+'2_2DMSD'] #kg/m2
