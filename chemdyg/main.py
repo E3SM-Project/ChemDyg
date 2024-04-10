@@ -79,6 +79,10 @@ def chemdyg(path, config, scriptDir, existing_bundles, job_ids_file):
                 sub = c['subsection']
                 prefix = 'chemdyg_%s_%04d-%04d' % (sub,c['year1'],c['year2'])
                 template = templateEnv.get_template( 'chemdyg_noaa_co_comparison.bash' )
+            elif c['subsection'] == "QBO_diags":
+                sub = c['subsection']
+                prefix = 'chemdyg_%s_%04d-%04d' % (sub,c['year1'],c['year2'])
+                template = templateEnv.get_template( 'chemdyg_QBO_diags.bash' )
             elif c['subsection'] == "pres_lat_plots":
                 sub = c['subsection']
                 prefix = 'chemdyg_%s_%04d-%04d' % (sub,c['year1'],c['year2'])
@@ -123,6 +127,8 @@ def chemdyg(path, config, scriptDir, existing_bundles, job_ids_file):
             if c['subsection'] == "cmip_comparison":
                 dependencies = [ os.path.join(scriptDir, 'ts_atm_monthly_180x360_aave_%04d-%04d-%04d.status' % (c['year1'],c['year2'],c['ypf'])), ]
             elif c['subsection'] == "noaa_co_comparison":
+                dependencies = [ os.path.join(scriptDir, 'ts_atm_monthly_180x360_aave_%04d-%04d-%04d.status' % (c['year1'],c['year2'],c['ypf'])), ]
+            elif c['subsection'] == "QBO_diags":
                 dependencies = [ os.path.join(scriptDir, 'ts_atm_monthly_180x360_aave_%04d-%04d-%04d.status' % (c['year1'],c['year2'],c['ypf'])), ]
             elif c['subsection'] == "surf_o3_diags":
                 dependencies = [ os.path.join(scriptDir, 'ts_atm_hourly_US1.0x1.0_nco_%04d-%04d-%04d.status' % (c['year1'],c['year2'],c['ypf'])), ] 

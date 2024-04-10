@@ -52,9 +52,7 @@ cd ${workdir}
 # Create local links to input climo files
 #tsDir={{ output }}/post/atm/{{ grid }}/ts/monthly/{{ '%dyr' % (ypf) }}
 mkdir -p ts
-#cd ts
-#ln -s ${tsDir}/*.nc .
-#cd ..
+
 # Create symbolic links to input files
 input={{ input }}/{{ input_subdir }}
 eamfile={{ input_files }}
@@ -71,30 +69,10 @@ do
   done
 done
 
-#{%- if frequency != 'monthly' %}
-## For non-monthly input files, need to add the last file of the previous year
-#year={{ year1 - 1 }}
-#YYYY=`printf "%04d" ${year}`
-#mapfile -t files < <( ls ${input}/{{ case }}.{{ input_files }}.${YYYY}-*.nc 2> /dev/null )
-#{% raw -%}
-#if [ ${#files[@]} -ne 0 ]
-#then
-#  ln -s ${files[-1]} .
-#fi
-#{%- endraw %}
-# as well as first file of next year to ensure that first and last years are complete
-#year={{ year2 + 1 }}
-#YYYY=`printf "%04d" ${year}`
-#mapfile -t files < <( ls ${input}/{{ case }}.{{ input_files }}.${YYYY}-*.nc 2> /dev/null )
-#{% raw -%}
-#if [ ${#files[@]} -ne 0 ]
-#then
-#  ln -s ${files[0]} .
-#fi
-#{%- endraw %}
-#{%- endif %}
+#mapDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
+mapDir={{ mapping_file }}
+ln -s ${mapDir} ./
 
-#cd ..
 
 # Run E3SM chem Diags
 echo
@@ -113,6 +91,11 @@ import xarray as xr
 from calendar import monthrange
 import pandas as pd
 import pylab 
+import cartopy.feature as cfeature
+import cartopy.crs as ccrs
+import cartopy.mpl.ticker as cticker
+from cartopy.util import add_cyclic_point
+import os
 
 path = './ts/'
 pathout = './'
@@ -133,10 +116,10 @@ h1_in = xr.open_mfdataset(path+filenameh1)
 timeperiod = len(h0_in['time'])
 startdate = str(np.array(h0_in['time'].dt.year[0]))+'-01-01'
 
-time_range_month = pd.date_range(startdate,  periods=timeperiod, freq='M')
+time_range_month = pd.date_range(startdate,  periods=timeperiod, freq='ME')
 h0_in['time'] = time_range_month
 h1_in['time'] = time_range_month
-
+ncol = h0_in['ncol']
 rearth = 6.37122e6 # Earth radius: m
 
 area_rad = h0_in['area'][0]         # radian (ncol)
@@ -149,6 +132,7 @@ time = h0_in['time']
 year = np.array(time.dt.year)
 month = np.array(time.dt.month)
 
+STE_2D = h1_in['O3_2DMSD_trop'][0:-1,:].copy()
 STE_time = []
 STE_NH_time = []
 STE_SH_time = []
@@ -157,7 +141,7 @@ for var in range(len(varname)):
   
     for i in range(len(time)):
 
-        dt = monthrange(2001,month[i])[1]*3600*24
+        dt = monthrange(2001,month[i])[1]*3600*24 #considered different days in different months
 
         MSD = h1_in[varname[var]+'_2DMSD_trop'][i,:] #kg/m2
 
@@ -188,6 +172,7 @@ for var in range(len(varname)):
             STE_time.append(STE)
             STE_NH_time.append(STE_NH)
             STE_SH_time.append(STE_SH)
+            STE_2D[i-1,:] = MSD-temp
         MSD_old = MSD
 
 y = xr.concat(STE_time,dim="time")
@@ -234,6 +219,17 @@ else:
      yS_ann[0] = 'nan'
      yS_ann[1:12] = y[0:11]*1.E-9*12
 
+STE_month = xr.DataArray(np.array(STE_2D), coords=[month[1::],ncol], dims=["month","ncol"])
+STE_month_mean= np.zeros((12,len(ncol)))
+for i in range(12):
+    if len(time) == 12:
+        STE_month_mean[0,:] = 0
+        STE_month_mean[1::,:] = 1.e3*12*STE_month
+        break
+    else:
+        m = i+1
+        STE_month_mean[i,:] = 1.e3*12*STE_month.sel(month=m).mean(axis=0)
+
 # ----- writing ncfile -----
 y_xr = xr.DataArray(y, coords=[time_range_month[1::]], dims=["time"])
 yN_xr = xr.DataArray(yN, coords=[time_range_month[1::]], dims=["time"])
@@ -264,6 +260,10 @@ ds8 = yN_ann_xr.to_dataset(name='yN_std')
 ds9 = yS_ann_xr.to_dataset(name='yS_std')
 ds = xr.merge([ds1, ds2, ds3, ds4, ds5, ds6, ds7, ds8, ds9])
 ds.to_netcdf(pathout+'E3SM_O3_STE_${y1}-${y2}.nc')
+
+STE_xr = xr.DataArray(STE_month_mean, name='STE',coords=[np.arange(1,13),ncol], dims=["month","ncol"],
+        attrs=dict(units="g/m2/year", description='Ozone STE flux'))
+STE_xr.to_netcdf(pathout+'E3SM_O3_STE_month_mean.nc')
 
 # ----- time series plot ----- 
 y_mean = 1.E-9*12*np.array(y.mean())
@@ -305,6 +305,56 @@ line2 = 'NH mean:'+str(np.round(yN_mean,2))
 line3 = 'SH mean:'+str(np.round(yS_mean,2))
 plt.legend( [line1,'Global std',line2,'NH std',line3,'SH std'])
 pylab.savefig(pathout+'O3_STE_flux_monthly.png', dpi=300)
+
+#----- 12 month lat-lon plot---------
+cmd = "ncks --map=${mapDir} E3SM_O3_STE_month_mean.nc E3SM_O3_STE_month_latlon.nc"
+
+remap = os.system(cmd)  
+print('remapping')
+
+## plot lat-lon STE flux
+filename = './E3SM_O3_STE_month_latlon.nc'
+file_in = xr.open_dataset(filename)
+
+STE = file_in['STE'] #g/m2/year
+nmonth = ['January','February','March','April','May','June','July','August','September','October','November','December']
+
+fig, axs = plt.subplots(nrows=3,ncols=4,
+                        subplot_kw={'projection': ccrs.PlateCarree()},
+                        figsize=(18,12))
+axs=axs.flatten()
+
+#Loop over all of the models
+for i in range(12):
+    cs=axs[i].contourf(file_in['lon'], file_in['lat'], STE[i,:,:], levels=np.arange(-6.5, 7.5, 1),
+        cmap="bwr",extend='both',transform=ccrs.PlateCarree())
+    axs[i].set_title(nmonth[i] +' mean: '+str(np.round(y_ann[i],2))+' Tg/yr')
+    axs[i].coastlines()
+    # Longitude labels
+    axs[i].set_xticks(np.arange(-180,181,60), crs=ccrs.PlateCarree())
+    lon_formatter = cticker.LongitudeFormatter()
+    axs[i].xaxis.set_major_formatter(lon_formatter)
+
+    # Latitude labels
+    axs[i].set_yticks(np.arange(-90,91,30), crs=ccrs.PlateCarree())
+    lat_formatter = cticker.LatitudeFormatter()
+    axs[i].yaxis.set_major_formatter(lat_formatter)
+        # Adjust the location of the subplots on the page to make room for the colorbar
+    fig.subplots_adjust(bottom=0.25, top=0.9, left=0.05, right=0.95,
+                    wspace=0.15, hspace=0.3)
+
+# Add a colorbar axis at the bottom of the graph
+cbar_ax = fig.add_axes([0.2, 0.15, 0.6, 0.02])
+
+# Draw the colorbar
+cbar=fig.colorbar(cs, ticks=np.arange(-6.5, 7.5, 1), cax=cbar_ax, orientation='horizontal')
+cbar.ax.tick_params(labelsize=14)
+#fig.tight_layout()
+# Add a big title at the top
+plt.suptitle('Ozone STE flux (g/m2/year) ${y1}-${y2} ', fontsize=24)
+
+pylab.savefig('STE_lat_lon_12month.png', dpi=600)
+
 EOF
 
 # Run diagnostics
@@ -334,6 +384,7 @@ fi
 
 # Copy files
 mv *.png ${f}
+rm map_*.nc 
 if [[ "${ncfile_save}" == "true" ]]; then
    mv *.nc ${results_dir}
 fi
