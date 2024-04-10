@@ -69,7 +69,7 @@ do
   done
 done
 
-mapDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
+#mapDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
 mapDir={{ mapping_file }}
 ln -s ${mapDir} ./
 
