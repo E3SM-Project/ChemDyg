@@ -70,7 +70,8 @@ do
 done
 
 mapDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
-ln -s ${mapDir}/maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc ./
+mapDir={{ mapping_file }}
+ln -s ${mapDir} ./
 
 
 # Run E3SM chem Diags
@@ -140,7 +141,7 @@ for var in range(len(varname)):
   
     for i in range(len(time)):
 
-        dt = monthrange(2001,month[i])[1]*3600*24
+        dt = monthrange(2001,month[i])[1]*3600*24 #considered different days in different months
 
         MSD = h1_in[varname[var]+'_2DMSD_trop'][i,:] #kg/m2
 
@@ -306,7 +307,7 @@ plt.legend( [line1,'Global std',line2,'NH std',line3,'SH std'])
 pylab.savefig(pathout+'O3_STE_flux_monthly.png', dpi=300)
 
 #----- 12 month lat-lon plot---------
-cmd = "ncks --map=map_ne30pg2_to_cmip6_180x360_aave.20200201.nc E3SM_O3_STE_month_mean.nc E3SM_O3_STE_month_latlon.nc"
+cmd = "ncks --map=${mapDir} E3SM_O3_STE_month_mean.nc E3SM_O3_STE_month_latlon.nc"
 
 remap = os.system(cmd)  
 print('remapping')
