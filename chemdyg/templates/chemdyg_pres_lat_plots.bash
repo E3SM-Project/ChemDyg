@@ -147,28 +147,28 @@ o3_refer = refer_in['O3'][0,:,:,:]
 o3_2d = o3.mean(axis=2)
 o3_refer_2d = o3_refer.mean(axis=2)
 o3_new = o3_2d.copy()
-o3_refer_new = o3_refer_2d.copy()
+o3_refer_new = o3_2d.copy()
 
 Q = file_in['Q'][0,:,:,:]*28.96/18
 Q_refer = refer_in['Q'][0,:,:,:]*28.96/18
 Q_2d = Q.mean(axis=2)
 Q_refer_2d = Q_refer.mean(axis=2)
 Q_new = Q_2d.copy()
-Q_refer_new = Q_refer_2d.copy()
+Q_refer_new = Q_2d.copy()
 
 T = file_in['T'][0,:,:,:]
 T_refer = refer_in['T'][0,:,:,:]
 T_2d = T.mean(axis=2)
 T_refer_2d = T_refer.mean(axis=2)
 T_new = T_2d.copy()
-T_refer_new = T_refer_2d.copy()
+T_refer_new = T_2d.copy()
 
 theda = T*(100000/lev)**0.286
-theda_refer = T_refer*(100000/lev)**0.286
+theda_refer = T_refer*(100000/lev_refer)**0.286
 theda_2d = theda.mean(axis=2)
 theda_refer_2d = theda_refer.mean(axis=2)
 theda_new = theda_2d.copy()
-theda_refer_new = theda_refer_2d.copy()
+theda_refer_new = theda_2d.copy()
 
 for i in range(180):
     f = interpolate.interp1d(lev_2d[:,i], o3_2d[:,i])
@@ -180,7 +180,7 @@ for i in range(180):
     thedaf = interpolate.interp1d(lev_2d[:,i], theda_2d[:,i])
     thedaf1 = interpolate.interp1d(lev_refer_2d[:,i], theda_refer_2d[:,i])
 
-    for k in range(72):
+    for k in range(len(o3['lev'])):
         if o3['lev'][k] < lev_2d[0,i] or o3['lev'][k] > lev_2d[-1,i]:
             o3_new[k,i] = 'nan'
             Q_new[k,i] = 'nan'
