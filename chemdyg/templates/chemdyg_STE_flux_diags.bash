@@ -255,9 +255,9 @@ yS_std_xr = yS_std_xr.assign_attrs(units="Tg/year", description='SH O3 flux stan
 ds4 = y_ann_xr.to_dataset(name='y_ann')
 ds5 = yN_ann_xr.to_dataset(name='yN_ann')
 ds6 = yS_ann_xr.to_dataset(name='yS_ann')
-ds7 = y_ann_xr.to_dataset(name='y_std')
-ds8 = yN_ann_xr.to_dataset(name='yN_std')
-ds9 = yS_ann_xr.to_dataset(name='yS_std')
+ds7 = y_std_xr.to_dataset(name='y_std')
+ds8 = yN_std_xr.to_dataset(name='yN_std')
+ds9 = yS_std_xr.to_dataset(name='yS_std')
 ds = xr.merge([ds1, ds2, ds3, ds4, ds5, ds6, ds7, ds8, ds9])
 ds.to_netcdf(pathout+'E3SM_O3_STE_${y1}-${y2}.nc')
 
