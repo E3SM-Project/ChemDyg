@@ -150,7 +150,7 @@ o3_new = o3_2d.copy()
 o3_refer_new = o3_2d.copy()
 
 #Q = file_in['Q'][0,:,:,:]*28.96/18
-Q = file_in['H2OLNZ'][0,:,:,:]
+Q = file_in['H2OLNZ'][0,:,:,:] #H2OLNZ has the unit mol/mol, unlike Q (g/kg)
 Q_refer = refer_in['Q'][0,:,:,:]*28.96/18
 Q_2d = Q.mean(axis=2)
 Q_refer_2d = Q_refer.mean(axis=2)
