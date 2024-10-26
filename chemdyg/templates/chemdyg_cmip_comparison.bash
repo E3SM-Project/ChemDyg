@@ -233,14 +233,14 @@ plt.fill_between(time_range_year,UKESM_ANN+UKESM_std,UKESM_ANN-UKESM_std, alpha=
 plt.plot(time_range_year[0:t_end_year],E3SM_ANN, label='E3SM', linewidth = 2, color='k')
 plt.fill_between(time_range_year[0:t_end_year],E3SM_ANN+E3SM_std,E3SM_ANN-E3SM_std, alpha=.5, linewidth=0, color='gray')
 
-plt.title('Tropospheric-ozone burden (TCO)')
+#plt.title('Tropospheric-ozone burden (Tg)')
 plt.legend(loc='upper left')
 #plt.ylim(200,1)
 #plt.axes().set_yscale("log")
 plt.xlabel('Time')
-plt.ylabel('Tg')
+plt.ylabel('Tropospheric ozone burden (Tg)')
 
-pylab.savefig(pathout+'CMIP_TCO_comparison.png', dpi=600)
+pylab.savefig(pathout+'CMIP_tropO3_comparison.png', dpi=600)
 
 EOF
 
