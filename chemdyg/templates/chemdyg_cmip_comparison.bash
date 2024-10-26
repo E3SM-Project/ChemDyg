@@ -106,7 +106,7 @@ echo ===== RUN E3SM CHEM DIAGS  =====
 echo
 
 # Prepare configuration file
-cat > CMIP6_TCO_comparison.py << EOF
+cat > CMIP6_tropO3_comparison.py << EOF
 #!/usr/bin/env python
 # coding: utf-8
 
@@ -233,7 +233,6 @@ plt.fill_between(time_range_year,UKESM_ANN+UKESM_std,UKESM_ANN-UKESM_std, alpha=
 plt.plot(time_range_year[0:t_end_year],E3SM_ANN, label='E3SM', linewidth = 2, color='k')
 plt.fill_between(time_range_year[0:t_end_year],E3SM_ANN+E3SM_std,E3SM_ANN-E3SM_std, alpha=.5, linewidth=0, color='gray')
 
-#plt.title('Tropospheric-ozone burden (Tg)')
 plt.legend(loc='upper left')
 #plt.ylim(200,1)
 #plt.axes().set_yscale("log")
@@ -245,7 +244,7 @@ pylab.savefig(pathout+'CMIP_tropO3_comparison.png', dpi=600)
 EOF
 
 # Run diagnostics
-command="python -u CMIP6_TCO_comparison.py"
+command="python -u CMIP6_tropO3_comparison.py"
 time ${command}
 if [ $? != 0 ]; then
   cd ..
