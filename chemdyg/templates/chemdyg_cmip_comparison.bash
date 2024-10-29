@@ -106,7 +106,7 @@ echo ===== RUN E3SM CHEM DIAGS  =====
 echo
 
 # Prepare configuration file
-cat > CMIP6_TCO_comparison.py << EOF
+cat > CMIP6_tropO3_comparison.py << EOF
 #!/usr/bin/env python
 # coding: utf-8
 
@@ -190,28 +190,28 @@ E3SM_ANN = E3SM_xr.groupby('time.year').mean('time')
 E3SM_std = E3SM_xr.groupby('time.year').std('time')
 
 # ----- writing ncfile -----
-CESM_ANN = CESM_ANN.assign_attrs(units="Tg", description='CESM Tropospheric-ozone burden (TCO) mean')
-CESM_std = CESM_std.assign_attrs(units="Tg", description='CESM Tropospheric-ozone burden (TCO) std')
+CESM_ANN = CESM_ANN.assign_attrs(units="Tg", description='CESM Tropospheric ozone burden mean')
+CESM_std = CESM_std.assign_attrs(units="Tg", description='CESM Tropospheric ozone burden std')
 CESM_ANN_xr = CESM_ANN.to_dataset(name='CESM_ANN')
 CESM_std_xr = CESM_std.to_dataset(name='CESM_std')
-GFDL_ANN = GFDL_ANN.assign_attrs(units="Tg", description='GFDL Tropospheric-ozone burden (TCO) mean')
-GFDL_std = GFDL_std.assign_attrs(units="Tg", description='GFDL Tropospheric-ozone burden (TCO) std')
+GFDL_ANN = GFDL_ANN.assign_attrs(units="Tg", description='GFDL Tropospheric ozone burden mean')
+GFDL_std = GFDL_std.assign_attrs(units="Tg", description='GFDL Tropospheric ozone burden std')
 GFDL_ANN_xr = GFDL_ANN.to_dataset(name='GFDL_ANN')
 GFDL_std_xr = GFDL_std.to_dataset(name='GFDL_std')
-GISS_ANN = GISS_ANN.assign_attrs(units="Tg", description='GISS Tropospheric-ozone burden (TCO) mean')
-GISS_std = GISS_std.assign_attrs(units="Tg", description='GISS Tropospheric-ozone burden (TCO) std')
+GISS_ANN = GISS_ANN.assign_attrs(units="Tg", description='GISS Tropospheric ozone burden mean')
+GISS_std = GISS_std.assign_attrs(units="Tg", description='GISS Tropospheric ozone burden std')
 GISS_ANN_xr = GISS_ANN.to_dataset(name='GISS_ANN')
 GISS_std_xr = GISS_std.to_dataset(name='GISS_std')
-MRI_ANN = MRI_ANN.assign_attrs(units="Tg", description='MRI Tropospheric-ozone burden (TCO) mean')
-MRI_std = MRI_std.assign_attrs(units="Tg", description='MRI Tropospheric-ozone burden (TCO) std')
+MRI_ANN = MRI_ANN.assign_attrs(units="Tg", description='MRI Tropospheric ozone burden mean')
+MRI_std = MRI_std.assign_attrs(units="Tg", description='MRI Tropospheric ozone burden std')
 MRI_ANN_xr = MRI_ANN.to_dataset(name='MRI_ANN')
 MRI_std_xr = MRI_std.to_dataset(name='MRI_std')
-UKESM_ANN = UKESM_ANN.assign_attrs(units="Tg", description='UKESM Tropospheric-ozone burden (TCO) mean')
-UKESM_std = UKESM_std.assign_attrs(units="Tg", description='UKESM Tropospheric-ozone burden (TCO) std')
+UKESM_ANN = UKESM_ANN.assign_attrs(units="Tg", description='UKESM Tropospheric ozone burden mean')
+UKESM_std = UKESM_std.assign_attrs(units="Tg", description='UKESM Tropospheric ozone burden std')
 UKESM_ANN_xr = UKESM_ANN.to_dataset(name='UKESM_ANN')
 UKESM_std_xr = UKESM_std.to_dataset(name='UKESM_std')
-E3SM_ANN = E3SM_ANN.assign_attrs(units="Tg", description='E3SM Tropospheric-ozone burden (TCO) mean')
-E3SM_std = E3SM_std.assign_attrs(units="Tg", description='E3SM Tropospheric-ozone burden (TCO) std')
+E3SM_ANN = E3SM_ANN.assign_attrs(units="Tg", description='E3SM Tropospheric ozone burden mean')
+E3SM_std = E3SM_std.assign_attrs(units="Tg", description='E3SM Tropospheric ozone burden std')
 E3SM_ANN_xr = E3SM_ANN.to_dataset(name='E3SM_ANN')
 E3SM_std_xr = E3SM_std.to_dataset(name='E3SM_std')
 ds = xr.merge([CESM_ANN_xr, CESM_std_xr,GFDL_ANN_xr, GFDL_std_xr,GISS_ANN_xr, GISS_std_xr,
@@ -233,19 +233,18 @@ plt.fill_between(time_range_year,UKESM_ANN+UKESM_std,UKESM_ANN-UKESM_std, alpha=
 plt.plot(time_range_year[0:t_end_year],E3SM_ANN, label='E3SM', linewidth = 2, color='k')
 plt.fill_between(time_range_year[0:t_end_year],E3SM_ANN+E3SM_std,E3SM_ANN-E3SM_std, alpha=.5, linewidth=0, color='gray')
 
-plt.title('Tropospheric-ozone burden (TCO)')
 plt.legend(loc='upper left')
 #plt.ylim(200,1)
 #plt.axes().set_yscale("log")
 plt.xlabel('Time')
-plt.ylabel('Tg')
+plt.ylabel('Tropospheric ozone burden (Tg)')
 
-pylab.savefig(pathout+'CMIP_TCO_comparison.png', dpi=600)
+pylab.savefig(pathout+'CMIP_tropO3_comparison.png', dpi=600)
 
 EOF
 
 # Run diagnostics
-command="python -u CMIP6_TCO_comparison.py"
+command="python -u CMIP6_tropO3_comparison.py"
 time ${command}
 if [ $? != 0 ]; then
   cd ..
