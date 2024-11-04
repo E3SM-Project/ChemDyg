@@ -150,7 +150,7 @@ linehead = linehead + '<pre>'+short_name+'</pre>'
 linehead = linehead + '<pre>Simulation period: '+ startyear +' - '+ endyear + '</pre>'
 line_ann = linehead + '<p> Season: ANN </p>'
 
-line_ann = line_ann + '<pre> Chemistry                          Global        N. Hemisphere   S. Hemisphere </pre>'
+line_ann = line_ann + '<pre> Chemistry                                   Global        N. Hemisphere   S. Hemisphere </pre>'
 
 fileout_ann = open(pathout+'chem_summary_table.html',"w")
 
@@ -247,35 +247,35 @@ for var in range(len(varname)):
             STE_mean_SH = STE_time_SH[1::].mean()
 
    # write out annual chem tendency
-            line_ann = line_ann + '<pre> '+ format('O3 burden (Tg)','28s')
+            line_ann = line_ann + '<pre> '+ format('O3 burden (Tg)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TOZ_total))
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TOZ_NH))
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TOZ_SH)) +'</pre>'
-            line_ann = line_ann + '<pre> '+ format('O3 surface deposition (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('O3 surface deposition (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDD_total)*unit_covet) 
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_NH)*unit_covet) 
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_SH)*unit_covet) +'</pre>'
-            line_ann = line_ann + '<pre> '+ format('O3 production (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('O3 production (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(CIP_total)*unit_covet) 
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(CIP_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(CIP_SH)*unit_covet) +'</pre>'
-            line_ann = line_ann + '<pre> '+ format('O3 loss (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('O3 loss (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(CIL_total)*unit_covet) 
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(CIL_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(CIL_SH)*unit_covet) +'</pre>'
-            line_ann = line_ann + '<pre> '+ format('O3 net change (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('O3 net change (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(NET)*unit_covet) 
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(NET_NH)*unit_covet) 
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(NET_SH)*unit_covet) +'</pre>'
-            line_ann = line_ann + '<pre> '+ format('O3 tropospheric burden (Tg)','28s')
+            line_ann = line_ann + '<pre> '+ format('O3 tropospheric burden (Tg)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TCO_total)) 
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TCO_NH))
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TCO_SH)) +'</pre>'
-            line_ann = line_ann + '<pre> '+ format('O3 stratospheric burden (Tg)*','28s')
+            line_ann = line_ann + '<pre> '+ format('O3 stratospheric burden (Tg)*','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(SCO_total)) 
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(SCO_NH))
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(SCO_SH)) +'</pre>'
-            line_ann = line_ann + '<pre> '+ format('O3 STE (Tg/yr)*','28s')
+            line_ann = line_ann + '<pre> '+ format('O3 STE (Tg/yr)*','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(STE_mean)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(STE_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(STE_SH)*unit_covet)+'</pre>'
@@ -309,27 +309,27 @@ for var in range(len(varname)):
             CEL_SH    = (dt*(CEL*SH).sum(axis=1)).mean()
             NET2_SH   = (dt*((CEP+CEL)*SH).sum(axis=1)).mean()
 
-            line_ann = line_ann + '<pre> '+ format('CO burden (Tg)','28s')
+            line_ann = line_ann + '<pre> '+ format('CO burden (Tg)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CO emission (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CO emission (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDS_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_SH)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CO surface deposition (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CO surface deposition (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDD_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_SH)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CO production (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CO production (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(CEP_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(CEP_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(CEP_SH)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CO loss (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CO loss (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(CEL_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(CEL_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(CEL_SH)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CO net change (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CO net change (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(NET2)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(NET2_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(NET2_SH)*unit_covet)+'</pre>'
@@ -360,25 +360,25 @@ for var in range(len(varname)):
             TDD_SH = (dt*(TDD*SH).sum(axis=1)).mean() #kg
             CEL_SH = (dt*(CEL*SH).sum(axis=1)).mean()
 
-            line_ann = line_ann + '<pre> '+ format('CH4 burden (Tg)','28s')
+            line_ann = line_ann + '<pre> '+ format('CH4 burden (Tg)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CH4 emission (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CH4 emission (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDS_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_SH)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CH4 surface deposition (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CH4 surface deposition (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDD_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_SH)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CH4 production (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CH4 production (Tg/yr)','37s')
             line_ann = line_ann + '      --------     '+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CH4 loss (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CH4 loss (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(CEL_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(CEL_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(CEL_SH)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('CH4 net change (Tg/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('CH4 net change (Tg/yr)','37s')
             line_ann = line_ann + '      --------     '+'</pre>'
         elif varname[var] == 'NO':
             MSD = h1_in[varname[var]+'_2DMSD'] + h1_in[varname[var]+'2_2DMSD'] #kg/m2
@@ -419,24 +419,24 @@ for var in range(len(varname)):
                 LGT_Stotal = (dt*LGT_SH.sum(axis=1).sum(axis=1)).mean() 
                 ACF_Stotal = (dt*ACF_SH.sum(axis=1).sum(axis=1)).mean() 
 
-            line_ann = line_ann + '<pre> '+ format('NOx burden (Tg N)','28s')
+            line_ann = line_ann + '<pre> '+ format('NOx burden (Tg N)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('NOx emission (Tg N/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('NOx emission (Tg N/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDS_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_SH)*unit_covet)+'</pre>'
             if 'NO_TDLgt' in variablelist:
-                line_ann = line_ann + '<pre> '+ format('NOx lightning emis (Tg N/yr)','28s')
+                line_ann = line_ann + '<pre> '+ format('NOx lightning emis (Tg N/yr)','37s')
                 line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(LGT_total)*unit_covet)
                 line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(LGT_Ntotal)*unit_covet)
                 line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(LGT_Stotal)*unit_covet)+'</pre>'
-                line_ann = line_ann + '<pre> '+ format('NOx Aircraft emis (Tg N/yr)','28s')
+                line_ann = line_ann + '<pre> '+ format('NOx Aircraft emis (Tg N/yr)','37s')
                 line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(ACF_total)*unit_covet)
                 line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(ACF_Ntotal)*unit_covet)
                 line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(ACF_Stotal)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('NOx surface deposition (Tg N/yr)','28s')
+            line_ann = line_ann + '<pre> '+ format('NOx surface deposition (Tg N/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDD_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_NH)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_SH)*unit_covet)+'</pre>'
