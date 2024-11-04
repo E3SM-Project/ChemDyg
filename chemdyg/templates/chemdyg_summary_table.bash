@@ -144,7 +144,7 @@ time = h0_in['time']
 
 year = np.array(time.dt.year)
 month = np.array(time.dt.month)
-linehead = '<h> E3SM main chemistry summary (units: Tg/year)</h>'
+linehead = '<h> E3SM chemistry high-level summary</h>'
 linehead = linehead + '<pre>The * sign indicates that the calculation involves the stratosphere, while calculations without the sign primarily pertain to the troposhere. </pre>'
 linehead = linehead + '<pre>'+short_name+'</pre>'
 linehead = linehead + '<pre>Simulation period: '+ startyear +' - '+ endyear + '</pre>'
