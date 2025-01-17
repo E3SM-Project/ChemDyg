@@ -1,0 +1,21 @@
+name: chemdyg_dev
+channels:
+  - conda-forge/label/zppy_dev
+  - conda-forge
+dependencies:
+  # Build
+  # =======================
+  - python >=3.9
+  - pip
+  - setuptools
+  # Base
+  # =================
+  - cartopy
+  - jinja2
+  - matplotlib
+  - netcdf4
+  - numpy
+  - pandas
+  - scipy
+  - xarray
+  - zppy 3.0.0rc1
