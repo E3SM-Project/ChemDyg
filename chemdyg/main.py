@@ -3,12 +3,11 @@ import os
 import pprint
 
 from zppy.utils import (
-    checkStatus,
-    getComponent,
-    getTasks,
-    getYears,
-    makeExecutable,
-    submitScript,
+    check_status,
+    get_tasks,
+    get_years,
+    make_executable,
+    submit_script,
 )
 
 # -----------------------------------------------------------------------------
@@ -22,7 +21,7 @@ def chemdyg(path, config, scriptDir, existing_bundles, job_ids_file):
     templateEnv = jinja2.Environment( loader=templateLoader )
 
     # --- List of chemdyg tasks ---
-    tasks = getTasks(config, 'chemdyg')
+    tasks = get_tasks(config, 'chemdyg')
     if (len(tasks) == 0):
         return existing_bundles
 
@@ -37,7 +36,7 @@ def chemdyg(path, config, scriptDir, existing_bundles, job_ids_file):
          # c['component2'] = getComponent(c['input_files2'])
 
         # Loop over year sets
-        year_sets = getYears(c['years'])
+        year_sets = get_years(c['years'])
         for s in year_sets:
             c['year1'] = s[0]
             c['year2'] = s[1]
@@ -107,14 +106,14 @@ def chemdyg(path, config, scriptDir, existing_bundles, job_ids_file):
             scriptFile = os.path.join(scriptDir, '%s.bash' % (prefix))
             statusFile = os.path.join(scriptDir, '%s.status' % (prefix))
             settingsFile = os.path.join(scriptDir, "%s.settings" % (prefix))
-            skip = checkStatus(statusFile)
+            skip = check_status(statusFile)
             if skip:
                 continue
 
             # Create script
             with open(scriptFile, 'w') as f:
                 f.write(template.render( **c ))
-            makeExecutable(scriptFile)
+            make_executable(scriptFile)
 
             with open(settingsFile, "w") as sf:
                 p = pprint.PrettyPrinter(indent=2, stream=sf)
@@ -131,7 +130,7 @@ def chemdyg(path, config, scriptDir, existing_bundles, job_ids_file):
             elif c['subsection'] == "QBO_diags":
                 dependencies = [ os.path.join(scriptDir, 'ts_atm_monthly_180x360_aave_%04d-%04d-%04d.status' % (c['year1'],c['year2'],c['ypf'])), ]
             elif c['subsection'] == "surf_o3_diags":
-                dependencies = [ os.path.join(scriptDir, 'ts_atm_hourly_US1.0x1.0_nco_%04d-%04d-%04d.status' % (c['year1'],c['year2'],c['ypf'])), ] 
+                dependencies = [ os.path.join(scriptDir, 'ts_atm_hourly_US1.0x1.0_nco_%04d-%04d-%04d.status' % (c['year1'],c['year2'],c['ypf'])), ]
             elif c['subsection'] == "climo_diags":
                 dependencies = [ os.path.join(scriptDir, 'climo_native_aave_%04d-%04d.status' % (c['year1'],c['year2'])), ]
             elif c['subsection'] == "pres_lat_plots":
@@ -144,7 +143,7 @@ def chemdyg(path, config, scriptDir, existing_bundles, job_ids_file):
             if not c["dry_run"]:
                 if c["bundle"] == "":
                     # Submit job
-                    submitScript(scriptFile, statusFile, export, job_ids_file, dependFiles=dependencies)
+                    submit_script(scriptFile, statusFile, export, job_ids_file, dependFiles=dependencies)
                 else:
                     print("...adding to bundle '%s'" % (c["bundle"]))
 
