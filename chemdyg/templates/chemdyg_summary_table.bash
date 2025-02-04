@@ -277,8 +277,8 @@ for var in range(len(varname)):
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(SCO_SH)) +'</pre>'
             line_ann = line_ann + '<pre> '+ format('O3 STE (Tg/yr)*','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(STE_mean)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(STE_NH)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(STE_SH)*unit_covet)+'</pre>'
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(STE_mean_NH)*unit_covet)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(STE_mean_SH)*unit_covet)+'</pre>'
 
         elif varname[var] == 'CO':
             MSD = h1_in[varname[var]+'_2DMSD'] #kg/m2
