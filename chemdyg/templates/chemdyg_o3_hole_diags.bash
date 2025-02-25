@@ -42,12 +42,8 @@ run_type="{{ run_type }}"
 obsDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
 ncfile_save="{{ ncfile_save }}"
 if [[ "${ncfile_save}" == "true" ]]; then
-   results_dir={{ output }}/post/atm/ncfiles
-   if [[ -d ${results_dir} ]]; then
-      echo "directory exists."
-   else
-      mkdir -p ${results_dir}
-   fi
+   results_dir={{ output }}/post/atm/chemdyg_output
+   mkdir -p ${results_dir}
 fi
 
 # Create temporary workdir
