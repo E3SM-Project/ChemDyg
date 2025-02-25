@@ -39,12 +39,8 @@ Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
 ncfile_save="{{ ncfile_save }}"
 if [[ "${ncfile_save}" == "true" ]]; then
-   results_dir={{ output }}/post/atm/ncfiles
-   if [[ -d ${results_dir} ]]; then
-      echo "directory exists."
-   else
-      mkdir -p ${results_dir}
-   fi
+   results_dir={{ output }}/post/atm/chemdygfiles
+   mkdir -p ${results_dir}
 fi
 
 # Create temporary workdir
