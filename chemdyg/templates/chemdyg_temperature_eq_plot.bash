@@ -39,7 +39,7 @@ Y2="{{ '%04d' % (year2) }}"
 run_type="{{ run_type }}"
 ncfile_save="{{ ncfile_save }}"
 if [[ "${ncfile_save}" == "true" ]]; then
-   results_dir={{ output }}/post/atm/chemdygfiles
+   results_dir={{ output }}/post/atm/chemdyg_output
    mkdir -p ${results_dir}
 fi
 

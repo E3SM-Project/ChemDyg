@@ -41,7 +41,7 @@ ncfile_save="{{ ncfile_save }}"
 # diagnostics_base_path is set by zppy using the mache package
 cmipDir="{{ diagnostics_base_path }}/observations/Atm/ChemDyg_inputs"
 if [[ "${ncfile_save}" == "true" ]]; then
-   results_dir={{ output }}/post/atm/chemdygfiles
+   results_dir={{ output }}/post/atm/chemdyg_output
    mkdir -p ${results_dir}
 fi
 
