@@ -177,34 +177,34 @@ for var in range(len(varname)):
             CIP = h0_in[varname[var]+'_2DCIP'+layer[ll]] #kg/m2/sec
             CIL = h0_in[varname[var]+'_2DCIL'+layer[ll]] #kg/m2/sec
             total_net = CIP-CIL
-            TOZ = SCO+TCO
+            TOZ = SCO+TCO #Tg
 
             MSD_total = ((MSD*area).sum(axis=1)).mean() #kg
             TDD_total = (dt*(TDD*area).sum(axis=1)).mean() #kg
             CIP_total = (dt*(CIP*area).sum(axis=1)).mean()
             CIL_total = (dt*(-CIL*area).sum(axis=1)).mean()
             NET       = (dt*((CIP-CIL)*area).sum(axis=1)).mean()
-            SCO_total = (SCO*area).sum(axis=1).mean() #kg
-            TCO_total = (TCO*area).sum(axis=1).mean() #kg
-            TOZ_total = (TOZ*area).sum(axis=1).mean() #kg
+            SCO_total = (SCO*area).sum(axis=1).mean() #Tg
+            TCO_total = (TCO*area).sum(axis=1).mean() #Tg
+            TOZ_total = (TOZ*area).sum(axis=1).mean() #Tg
             # NH
             MSD_NH = ((MSD*NH).sum(axis=1)).mean() #kg
             TDD_NH = (dt*(TDD*NH).sum(axis=1)).mean() #kg
             CIP_NH = (dt*(CIP*NH).sum(axis=1)).mean()
             CIL_NH = (dt*(-CIL*NH).sum(axis=1)).mean()
             NET_NH = (dt*((CIP-CIL)*NH).sum(axis=1)).mean()
-            SCO_NH = (SCO*NH).sum(axis=1).mean() #kg
-            TCO_NH = (TCO*NH).sum(axis=1).mean() #kg
-            TOZ_NH = (TOZ*NH).sum(axis=1).mean() #kg
+            SCO_NH = (SCO*NH).sum(axis=1).mean() #Tg
+            TCO_NH = (TCO*NH).sum(axis=1).mean() #Tg
+            TOZ_NH = (TOZ*NH).sum(axis=1).mean() #Tg
             # SH
             MSD_SH = ((MSD*SH).sum(axis=1)).mean() #kg
             TDD_SH = (dt*(TDD*SH).sum(axis=1)).mean() #kg
             CIP_SH = (dt*(CIP*SH).sum(axis=1)).mean()
             CIL_SH = (dt*(-CIL*SH).sum(axis=1)).mean()
             NET_SH = (dt*((CIP-CIL)*SH).sum(axis=1)).mean()
-            SCO_SH = (SCO*SH).sum(axis=1).mean() #kg
-            TCO_SH = (TCO*SH).sum(axis=1).mean() #kg
-            TOZ_SH = (TOZ*SH).sum(axis=1).mean() #kg
+            SCO_SH = (SCO*SH).sum(axis=1).mean() #Tg
+            TCO_SH = (TCO*SH).sum(axis=1).mean() #Tg
+            TOZ_SH = (TOZ*SH).sum(axis=1).mean() #Tg
             # calculate STE
             for i in range(len(time)):
                 MSDt = h1_in[varname[var]+'_2DMSD_trop'][i,:] #kg/m2
