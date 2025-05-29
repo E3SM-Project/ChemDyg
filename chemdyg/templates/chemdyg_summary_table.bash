@@ -310,9 +310,9 @@ for var in range(len(varname)):
             NET2_SH   = (dt*((CEP+CEL)*SH).sum(axis=1)).mean()
 
             line_ann = line_ann + '<pre> '+ format('CO burden (Tg)','37s')
-            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*unit_covet)+'</pre>'
+            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*1.e-9)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*1.e-9)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*1.e-9)+'</pre>'
             line_ann = line_ann + '<pre> '+ format('CO emission (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDS_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_NH)*unit_covet)
@@ -361,9 +361,9 @@ for var in range(len(varname)):
             CEL_SH = (dt*(CEL*SH).sum(axis=1)).mean()
 
             line_ann = line_ann + '<pre> '+ format('CH4 burden (Tg)','37s')
-            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*unit_covet)+'</pre>'
+            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*1.e-9)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*1.e-9)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*1.e-9)+'</pre>'
             line_ann = line_ann + '<pre> '+ format('CH4 emission (Tg/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDS_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_NH)*unit_covet)
