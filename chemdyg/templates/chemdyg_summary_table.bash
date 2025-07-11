@@ -421,9 +421,9 @@ for var in range(len(varname)):
                 ACF_Stotal = (dt*ACF_SH.sum(axis=1).sum(axis=1)).mean() 
 
             line_ann = line_ann + '<pre> '+ format('NOx burden (Tg N)','37s')
-            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*unit_covet)+'</pre>'
+            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*1.e-9)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*1.e-9)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*1.e-9)+'</pre>'
             line_ann = line_ann + '<pre> '+ format('NOx emission (Tg N/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDS_total)*unit_covet)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_NH)*unit_covet)
