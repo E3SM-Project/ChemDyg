@@ -113,7 +113,7 @@ import pandas as pd
 import pylab
 from matplotlib.dates import DateFormatter
 
-filename = '${short}'
+filename = '${case}'
 path = './ts/'
 pathout = './'
 refer = xr.open_dataset(path+filename+'.eam.h0.${Y1}-01.nc')

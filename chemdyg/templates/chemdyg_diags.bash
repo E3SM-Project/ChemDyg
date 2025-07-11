@@ -111,11 +111,12 @@ import pandas as pd
 path = './climo/'
 pathout = './'
 
+case_name = '${case}'
 short_name = '${short}'
 startyear = '${Y1}'
 endyear = '${Y2}'
 
-filename = short_name+'*_ANN_*.nc'
+filename = case_name+'*_ANN_*.nc'
 seasons = ['ANN','DJF','MAM','JJA','SON']
 
 varname = ["O3","OH","HO2","H2O2","CH2O","CH3O2","CH3OOH","NO","NO2","NO3","N2O5",
@@ -152,7 +153,7 @@ for ss in range(len(seasons)):
     fileout_ann = open(pathout+'chem_clim_'+seasons[ss]+'.html',"w")
     fileout_txt = open(pathout+'chem_clim_'+seasons[ss]+'.txt',"w")
 
-    h0_in = xr.open_mfdataset(path+short_name+'*'+seasons[ss]+'*.nc')
+    h0_in = xr.open_mfdataset(path+case_name+'*'+seasons[ss]+'*.nc')
 
     for var in range(len(varname)-1):
         if varname[var] in trop_list:
@@ -262,7 +263,7 @@ for ss in range(len(seasons)):
     line_ann = line_ann + '<pre> Chemistry           TDI            TIP            TIL            NET1         L2 DIFF          TRI            CIP            CIL          NET2          L2 DIFF          MPP            MPL            NET3          L2 DIFF        </pre>'
     line_ann = line_ann + '<pre>                                                                (TIP+TIL)     (TDI;NET1)                                                  (CIP+CIL)     (TDI+TRI;NET2)                                (MPP+MPL)     (TDI+TRI;NET3)   </pre>'
     fileout_ann = open(pathout+'chem_prodloss_'+seasons[ss]+'.html',"w")
-    h0_in = xr.open_mfdataset(path+short_name+'*'+seasons[ss]+'*.nc')
+    h0_in = xr.open_mfdataset(path+case_name+'*'+seasons[ss]+'*.nc')
 
     for var in range(len(varname)):
         total_layer = len(layer)-1

@@ -96,13 +96,14 @@ import os
 path = './ts/'
 pathout = './'
 
+case_name = '${case}'
 short_name = '${short}'
 startyear = ${y1}
 endyear = ${y2}
 nyears = endyear - startyear + 1
 
-filename = short_name+'.eam.h0.*.nc'
-filenameh1 = short_name+'.${eamfile}.*.nc'
+filename = case_name+'.eam.h0.*.nc'
+filenameh1 = case_name+'.${eamfile}.*.nc'
 
 varname = ["O3"]
 
