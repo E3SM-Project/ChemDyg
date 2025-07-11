@@ -421,11 +421,11 @@ for var in range(len(varname)):
                 LGT_Stotal = (dt*LGT_SH.sum(axis=1).sum(axis=1)).mean() 
                 ACF_Stotal = (dt*ACF_SH.sum(axis=1).sum(axis=1)).mean() 
 
-            line_ann = line_ann + '<pre> '+ format('NOx burden (Tg N)','37s')
+            line_ann = line_ann + '<pre> '+ format('NO burden (Tg N)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*1.e-9)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*1.e-9)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*1.e-9)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('NOx emission (Tg N/yr)','37s')
+            line_ann = line_ann + '<pre> '+ format('NO emission (Tg N/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDS_total)*unit_covet*NO_to_N)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_NH)*unit_covet*NO_to_N)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_SH)*unit_covet*NO_to_N)+'</pre>'
@@ -438,7 +438,7 @@ for var in range(len(varname)):
                 line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(ACF_total)*unit_covet)
                 line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(ACF_Ntotal)*unit_covet)
                 line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(ACF_Stotal)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('NOx surface deposition (Tg N/yr)','37s')
+            line_ann = line_ann + '<pre> '+ format('NO surface deposition (Tg N/yr)','37s')
             line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDD_total)*unit_covet*NO_to_N)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_NH)*unit_covet*NO_to_N)
             line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_SH)*unit_covet*NO_to_N)+'</pre>'
