@@ -112,11 +112,12 @@ import xarray as xr
 import pandas as pd
 import pylab
 
+casename = '${case}'
 filename = '${short}'
 path = './ts/'
 pathout = './'
-refer = xr.open_dataset(path+filename+'.eam.h0.${Y1}-01.nc')
-file_in = xr.open_mfdataset(path+filename+'.${eamfile}.*')
+refer = xr.open_dataset(path+casename+'.eam.h0.${Y1}-01.nc')
+file_in = xr.open_mfdataset(path+casename+'.${eamfile}.*')
 
 lat = file_in['lat']
 lat2 = refer['lat']

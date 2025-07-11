@@ -118,11 +118,12 @@ from scipy import interpolate
 path = './climo/'
 pathout = './'
 
+case_name = '${case}'
 short_name = '${short}'
 startyear = '${Y1}'
 endyear = '${Y2}'
 
-filename = short_name+'_ANN_'+startyear+'01_'+endyear+'12_climo.nc'
+filename = case_name+'_ANN_'+startyear+'01_'+endyear+'12_climo.nc'
 refername = 'v2.LR.amip_0101_ANN_198501_201412_climo.nc'
 
 file_in = xr.open_dataset(path+filename)

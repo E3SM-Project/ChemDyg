@@ -116,11 +116,12 @@ import xarray as xr
 path = './climo/'
 pathout = './'
 
+case_name = '${case}'
 short_name = '${short}'
 startyear = '${Y1}'
 endyear = '${Y2}'
 
-filename = short_name+'_ANN_'+startyear+'01_'+endyear+'12_climo.nc'
+filename = case_name+'_ANN_'+startyear+'01_'+endyear+'12_climo.nc'
 
 file_in = xr.open_dataset(path+filename)
 

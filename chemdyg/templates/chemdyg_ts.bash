@@ -109,12 +109,13 @@ import pandas as pd
 path = './'
 pathout = './'
 
+case_name = '${case}'
 short_name = '${short}'
 startyear = '${y1}'
 endyear = '${y2}'
 
-filename = short_name+'.eam.h0.*.nc'
-filenameh1 = short_name+'.${eamfile}.*.nc'
+filename = case_name+'.eam.h0.*.nc'
+filenameh1 = case_name+'.${eamfile}.*.nc'
 
 varname = ["O3","OH","HO2","H2O2","CH2O","CH3O2","CH3OOH","NO","NO2","NO3","N2O5",
            "HNO3","HO2NO2","PAN","CO","C2H6","C3H8","C2H4","ROHO2","CH3COCH3","C2H5O2",
