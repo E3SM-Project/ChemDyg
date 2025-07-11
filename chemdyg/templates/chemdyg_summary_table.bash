@@ -133,6 +133,7 @@ h1_in['time'] = time_range_month
 
 rearth = 6.37122e6 # Earth radius: m
 unit_covet = 1.e-9*12 # kg/month -> Tg/year
+NO_to_N = 14.0/30.0   # kg-NO -> kg-N
 
 area_rad = h0_in['area'][0]         # radian (ncol)
 area = area_rad * rearth * rearth  # m2
@@ -382,22 +383,22 @@ for var in range(len(varname)):
             line_ann = line_ann + '<pre> '+ format('CH4 net change (Tg/yr)','37s')
             line_ann = line_ann + '      --------     '+'</pre>'
         elif varname[var] == 'NO':
-            MSD = h1_in[varname[var]+'_2DMSD'] + h1_in[varname[var]+'2_2DMSD'] #kg/m2
-            TDS = h0_in[varname[var]+'_2DTDS'+layer[ll]] + h0_in[varname[var]+'2_2DTDS'+layer[ll]]  #kg/m2/sec
+            MSD = h1_in[varname[var]+'_2DMSD'] + h1_in[varname[var]+'2_2DMSD'] #kg NO/m2
+            TDS = h0_in[varname[var]+'_2DTDS'+layer[ll]] + h0_in[varname[var]+'2_2DTDS'+layer[ll]]  #kg NO/m2/sec
             TDD = h0_in[varname[var]+'_2DTDD'+layer[ll]] + h0_in[varname[var]+'2_2DTDD'+layer[ll]]
             if 'NO_TDLgt' in variablelist:
                 LGT = h0_in['NO_TDLgt'] # kg N/m2/sec
                 ACF = h0_in['NO2_TDAcf'] 
     # annunal mean
-            MSD_total = ((MSD*area).sum(axis=1)).mean() #kg
-            TDS_total = (dt*(TDS*area).sum(axis=1)).mean() #kg
-            TDD_total = (dt*(TDD*area).sum(axis=1)).mean() #kg
-            MSD_NH = ((MSD*NH).sum(axis=1)).mean() #kg
-            TDS_NH = (dt*(TDS*NH).sum(axis=1)).mean() #kg
-            TDD_NH = (dt*(TDD*NH).sum(axis=1)).mean() #kg
-            MSD_SH = ((MSD*SH).sum(axis=1)).mean() #kg
-            TDS_SH = (dt*(TDS*SH).sum(axis=1)).mean() #kg
-            TDD_SH = (dt*(TDD*SH).sum(axis=1)).mean() #kg
+            MSD_total = ((MSD*area).sum(axis=1)).mean() #kg NO
+            TDS_total = (dt*(TDS*area).sum(axis=1)).mean() #kg NO/month
+            TDD_total = (dt*(TDD*area).sum(axis=1)).mean() #kg NO/month
+            MSD_NH = ((MSD*NH).sum(axis=1)).mean()
+            TDS_NH = (dt*(TDS*NH).sum(axis=1)).mean()
+            TDD_NH = (dt*(TDD*NH).sum(axis=1)).mean()
+            MSD_SH = ((MSD*SH).sum(axis=1)).mean()
+            TDS_SH = (dt*(TDS*SH).sum(axis=1)).mean()
+            TDD_SH = (dt*(TDD*SH).sum(axis=1)).mean()
             if 'NO_TDLgt' in variablelist:
                 LGT_3d = LGT.copy()
                 ACF_3d = ACF.copy()
@@ -420,14 +421,14 @@ for var in range(len(varname)):
                 LGT_Stotal = (dt*LGT_SH.sum(axis=1).sum(axis=1)).mean() 
                 ACF_Stotal = (dt*ACF_SH.sum(axis=1).sum(axis=1)).mean() 
 
-            line_ann = line_ann + '<pre> '+ format('NOx burden (Tg N)','37s')
-            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('NOx emission (Tg N/yr)','37s')
-            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDS_total)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_NH)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_SH)*unit_covet)+'</pre>'
+            line_ann = line_ann + '<pre> '+ format('NO burden (Tg N)','37s')
+            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(MSD_total)*1.e-9)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_NH)*1.e-9)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(MSD_SH)*1.e-9)+'</pre>'
+            line_ann = line_ann + '<pre> '+ format('NO emission (Tg N/yr)','37s')
+            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDS_total)*unit_covet*NO_to_N)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_NH)*unit_covet*NO_to_N)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDS_SH)*unit_covet*NO_to_N)+'</pre>'
             if 'NO_TDLgt' in variablelist:
                 line_ann = line_ann + '<pre> '+ format('NOx lightning emis (Tg N/yr)','37s')
                 line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(LGT_total)*unit_covet)
@@ -437,10 +438,10 @@ for var in range(len(varname)):
                 line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(ACF_total)*unit_covet)
                 line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(ACF_Ntotal)*unit_covet)
                 line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(ACF_Stotal)*unit_covet)+'</pre>'
-            line_ann = line_ann + '<pre> '+ format('NOx surface deposition (Tg N/yr)','37s')
-            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDD_total)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_NH)*unit_covet)
-            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_SH)*unit_covet)+'</pre>'
+            line_ann = line_ann + '<pre> '+ format('NO surface deposition (Tg N/yr)','37s')
+            line_ann = line_ann + '     '+"{0:+.3e}".format(np.array(TDD_total)*unit_covet*NO_to_N)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_NH)*unit_covet*NO_to_N)
+            line_ann = line_ann + '       '+"{0:+.3e}".format(np.array(TDD_SH)*unit_covet*NO_to_N)+'</pre>'
 
 fileout_ann.write(line_ann)
 fileout_ann.close()
