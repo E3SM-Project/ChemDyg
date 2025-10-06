@@ -1,4 +1,11 @@
-E3SM chemistry diagnostic package (ChemDyg) is designed for E3SM chemistry development. There are total 12 types of plot and 3 types of table for model-to-model and model-to-observation comparison.
+E3SM chemistry diagnostic package (ChemDyg) is designed for E3SM atmospheric chemistry development. The details are documented in this paper: https://doi.org/10.1016/j.envsoft.2025.106498.
+
+Reference:
+```
+Lee, H.-H., Q. Tang, M. J. Prather, and J. Xie (2025), A Comprehensive Chemistry Evaluation
+and Diagnostics Package for E3SM – ChemDyg Version 1.1.0, Environ. Model. Softw., 191,
+106498, doi:10.1016/j.envsoft.2025.106498.
+```
 
 Index page and example figures:
 https://web.lcrc.anl.gov/public/e3sm/diagnostic_output/ac.lee1061/20220914.PAN.MZThet.v2.LR.bi-grid.amip.chemUCI_Linozv3/e3sm_chem_diags/plots/
