@@ -24,7 +24,7 @@ For people who cannot access zppy-supported machines, the observational data use
 
 ## License
 
-Copyright (c) 2023, Energy Exascale Earth System Model Project
+Copyright (c) 2023-2025, Energy Exascale Earth System Model Project
 All rights reserved
 
 SPDX-License-Identifier: (BSD-3-Clause)
